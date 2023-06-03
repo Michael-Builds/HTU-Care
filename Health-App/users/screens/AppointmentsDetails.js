@@ -9,8 +9,11 @@ import {
   ScrollView,
   TouchableOpacity,
   KeyboardAvoidingView,
+  ActivityIndicator,
   Platform,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 import CustomDrawer from "../navigators/CustomDrawer";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -22,6 +25,7 @@ const AppointmentsDetails = () => {
   const [time, setTime] = useState(new Date());
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [condition, setCondition] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleDateChange = (_, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -35,15 +39,59 @@ const AppointmentsDetails = () => {
     setTime(currentTime);
   };
 
-  const handleSubmit = () => {
-    // handle form submission
-    console.log({
-      fullName,
-      email,
-      date,
-      time,
-      condition,
-    });
+  //checking for empty and invalid input fields
+  const isFormValid = () => {
+    if (!fullName || !email || !date || !time || !condition) {
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!isFormValid()) {
+      Alert.alert("Error", "Please fill all the fields");
+      return;
+    }
+    try {
+      setLoading(true);
+
+      const appointmentData = {
+        fullName,
+        email,
+        date,
+        time,
+        condition,
+      };
+
+      // Send a POST request to the backend API endpoint
+      const response = await axios.post(
+        "http://192.168.237:4000/appointments",
+        appointmentData
+      );
+
+      console.log(response.data); // Appointment booked successfully message or other response from the backend
+
+      // Reset form fields
+      setFullName("");
+      setEmail("");
+      setDate(new Date());
+      setTime(new Date());
+      setCondition("");
+
+      Alert.alert("Success", "Appointment booked successfully!");
+    } catch (error) {
+      console.error(error);
+      if (error.message === "Network Error") {
+        Alert.alert(
+          "Network Error",
+          "Please check your internet connection and try again."
+        );
+      } else {
+        Alert.alert("Error", "Failed to book appointment. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,14 +124,14 @@ const AppointmentsDetails = () => {
             style={styles.input}
             placeholder="Full Name"
             value={fullName}
-            onChangeText={(text)=> setFullName(text)}
+            onChangeText={(text) => setFullName(text)}
           />
           <TextInput
             style={styles.input}
             placeholder="Email Address"
             keyboardType="email-address"
             value={email}
-            onChangeText={(text)=> setEmail(text)}
+            onChangeText={(text) => setEmail(text)}
           />
           <TouchableOpacity onPress={() => setShowDatePicker(true)}>
             <Text style={styles.dateInput}>{date.toLocaleDateString()}</Text>
@@ -92,7 +140,7 @@ const AppointmentsDetails = () => {
             <DateTimePicker
               value={date}
               mode="date"
-              onChange={(date)=>handleDateChange(date)}
+              onChange={(date) => handleDateChange(date)}
             />
           )}
           <TouchableOpacity onPress={() => setShowTimePicker(true)}>
@@ -102,7 +150,7 @@ const AppointmentsDetails = () => {
             <DateTimePicker
               value={time}
               mode="time"
-              onChange={(time)=> handleTimeChange(time)}
+              onChange={(time) => handleTimeChange(time)}
             />
           )}
           <TextInput
@@ -111,11 +159,12 @@ const AppointmentsDetails = () => {
             multiline
             numberOfLines={4}
             value={condition}
-            onChangeText={(text)=> setCondition(text)}
+            onChangeText={(text) => setCondition(text)}
           />
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>Book Now!</Text>
           </TouchableOpacity>
+          {loading && <ActivityIndicator size="large" color="#075eec" />}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

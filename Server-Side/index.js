@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
+
 //rest object
 const app = express();
 
@@ -16,8 +17,12 @@ require("./models/User");
 
 const requireToken = require("./middleware/requireToken");
 const authRoutes = require("./routes/authRoutes");
+const appointmentRoutes = require("./routes/appointmentRoutes");
+
 app.use(bodyParser.json());
 app.use(authRoutes);
+app.use(appointmentRoutes);
+
 
 //Pull request
 app.get("/", requireToken, (req, res) => {
