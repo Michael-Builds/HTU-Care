@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect  } from "react";
 import {
   View,
   TextInput,
@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomDrawer from "../navigators/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
@@ -21,10 +22,12 @@ const HealthRecords = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [facility, setFacility] = useState("");
-  const [healthprovider, setHealthProvider] = useState("");
+  const [healthProvider, setHealthProvider] = useState("");
   const [testType, setTestType] = useState("");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const testTypeOptions = [
     { label: "Lab Test", value: "lab" },
@@ -63,10 +66,70 @@ const HealthRecords = () => {
     ))}
   </Picker>;
 
-  // Submittion Button handler
-  const handleSubmit = () => {
-    // handle form submission
+const handleSubmit = async () => {
+  if (!validateForm()) {
+    return;
+  }
+
+  const healthRecordData = {
+    fullName,
+    email,
+    facility,
+    healthProvider: healthProvider,
+    testType,
+    date,
   };
+
+  try {
+    setLoading(true);
+    // Make a POST request to the backend API to retrieve the token
+    const loginResponse = await fetch("http://192.168.43.237:4000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+    });
+
+    if (!loginResponse.ok) {
+      throw new Error("Login failed");
+    }
+
+    const loginData = await loginResponse.json();
+    const token = loginData.token;
+
+    // Make a POST request to the backend API to upload the health record
+    const uploadResponse = await fetch("http://192.168.43.237:4000/health-records", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(healthRecordData),
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error("Failed to upload health record");
+    }
+
+    Alert.alert("Success", "Health record uploaded successfully");
+    // Reset the form fields
+    setFullName("");
+    setEmail("");
+    setFacility("");
+    setHealthProvider("");
+    setTestType("");
+    setDate(new Date());
+  } catch (error) {
+    Alert.alert("Error", error.message || "An error occurred. Please try again later.");
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <KeyboardAvoidingView
@@ -117,7 +180,7 @@ const HealthRecords = () => {
           <TextInput
             style={styles.input}
             placeholder="Name of Nurse or Doctor"
-            value={healthprovider}
+            value={healthProvider}
             onChangeText={(text) => setHealthProvider(text)}
           />
           <View style={styles.dropdownContainer}>
@@ -151,9 +214,17 @@ const HealthRecords = () => {
             />
           )}
 
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Upload</Text>
-          </TouchableOpacity>
+          {/* Loading indicator */}
+          {loading ? (
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator color="#075eec" />
+              <Text style={styles.loaderText}>Loading...</Text>
+            </View>
+          ) : (
+            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+              <Text style={styles.buttonText}>Upload</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -182,6 +253,15 @@ const styles = StyleSheet.create({
     color: "#1d1d1d",
     marginBottom: 8,
     textAlign: "center",
+  },
+  loaderContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loaderText: {
+    marginLeft: 10,
+    color: "#fff",
   },
 
   inputContainer: {

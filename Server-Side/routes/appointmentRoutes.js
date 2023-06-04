@@ -6,8 +6,8 @@ const dotenv = require("dotenv");
 // dotenv config
 dotenv.config();
 
-const User = require("./models/User");
-const Appointment = require("./models/Appointment");
+const User = require("../models/User");
+const Appointment = require("../models/Appointment");
 
 // Endpoint for booking an appointment
 router.post("/appointments", async (req, res) => {

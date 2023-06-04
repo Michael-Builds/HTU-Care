@@ -12,7 +12,6 @@ import {
   ActivityIndicator,
   Platform,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import CustomDrawer from "../navigators/CustomDrawer";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -161,10 +160,17 @@ const AppointmentsDetails = () => {
             value={condition}
             onChangeText={(text) => setCondition(text)}
           />
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Book Now!</Text>
-          </TouchableOpacity>
-          {loading && <ActivityIndicator size="large" color="#075eec" />}
+
+          {loading ? (
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator color="#075eec" />
+              <Text style={styles.loaderText}>Loading...</Text>
+            </View>
+          ) : (
+            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+              <Text style={styles.buttonText}>Book Now!</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -240,6 +246,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     marginBottom: 20,
+  },
+  loaderContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loaderText: {
+    marginLeft: 10,
+    color: "#fff",
   },
   buttonText: {
     color: "#fff",

@@ -1,26 +1,39 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
+// Define the health record schema
 const healthRecordSchema = new mongoose.Schema({
-    fullname: {
-        type: String,
-        required: true,
-    },
-    date: {
-        type: Date,
-        required: true,
-    },
-    facility: {
-        type: String,
-        required: true,
-    }
-})
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  fullName: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  facility: {
+    type: String,
+    required: true,
+  },
+  healthProvider: {
+    type: String,
+    required: true,
+  },
+  testType: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: Date,
+    required: true,
+  },
+});
 
-healthRecordSchema.pre("save", function (next) {
-    // perform any data validation or modification here
-    next();
-  });
+// Create the health record model
+const HealthRecord = mongoose.model("HealthRecord", healthRecordSchema);
 
-
-const healthRecords = mongoose.model('HealthRecords', healthRecordSchema );
-
-module.exports = healthRecords;
+module.exports = HealthRecord;

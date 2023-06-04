@@ -18,10 +18,14 @@ require("./models/User");
 const requireToken = require("./middleware/requireToken");
 const authRoutes = require("./routes/authRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
+const healthRecordsRouter = require("./routes/healthRecords");
+const authMiddleware = require("./middleware/authMiddleware");
+
 
 app.use(bodyParser.json());
 app.use(authRoutes);
 app.use(appointmentRoutes);
+app.use("/health-records", authMiddleware, healthRecordsRouter);
 
 
 //Pull request
