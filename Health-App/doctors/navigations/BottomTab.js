@@ -9,7 +9,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 const Tab = createBottomTabNavigator();
 
 const home = "House";
-const appointments = "Appointment";
+const appointments = "Appointments";
 const message = "Chat";
 
 const BottomTab = () => {

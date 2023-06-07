@@ -1,44 +1,51 @@
 const express = require("express");
 const router = express.Router();
-const authMiddleware = require("../middleware/authMiddleware");
+const jwt = require("jsonwebtoken");
 const HealthRecord = require("../models/Health-Record");
 
-// Upload health record endpoint
-router.post("/", authMiddleware, async (req, res) => {
+// POST /health-records - Create a new health record
+router.post("/health-records", async (req, res) => {
   try {
-    // Ensure only users with the role of "user" can upload health records
-    if (req.user.role !== "user") {
-      return res
-        .status(403)
-        .json({ message: "Forbidden: Insufficient privileges" });
-    }
+    // Extract the token from the request headers
+    const token = req.headers.authorization.split(" ")[1];
 
-    // Extract the health record data from the request body
-    const { fullName, email, facility, healthProvider, testType, date } =
-      req.body;
+    // Verify the token and get the user's ID
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decodedToken.userId;
+
+    // Check if the user has already uploaded three health records today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const recordCount = await HealthRecord.countDocuments({
+      user: userId,
+      date: { $gte: today, $lt: tomorrow },
+    });
+
+    if (recordCount >= 3) {
+      return res.status(403).json({ error: "Maximum limit reached for today" });
+    }
 
     // Create a new health record object
     const healthRecord = new HealthRecord({
-      fullName,
-      email,
-      facility,
-      healthProvider,
-      testType,
-      date,
-      user: req.user._id,
+      user: userId,
+      fullName: req.body.fullName,
+      email: req.body.email,
+      facility: req.body.facility,
+      healthProvider: req.body.healthProvider,
+      testType: req.body.testType,
+      date: req.body.date,
     });
 
-    // Save the health record to the database
-    await healthRecord.save();
+    // Save the health record in the database
+    const savedHealthRecord = await healthRecord.save();
 
-    // Return a success response
-    res.status(200).json({ message: "Health record uploaded successfully" });
+    res.status(201).json(savedHealthRecord);
   } catch (error) {
-    // Handle any errors and return an error response
-    res.status(500).json({
-      message: "Failed to upload health record",
-      error: error.message,
-    });
+    console.error(error);
+    res.status(500).json({ error: "Failed to save health record" });
   }
 });
 

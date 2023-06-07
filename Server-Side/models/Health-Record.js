@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// Define the health record schema
 const healthRecordSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -33,7 +32,6 @@ const healthRecordSchema = new mongoose.Schema({
   },
 });
 
-// Create the health record model
 const HealthRecord = mongoose.model("HealthRecord", healthRecordSchema);
 
 module.exports = HealthRecord;
