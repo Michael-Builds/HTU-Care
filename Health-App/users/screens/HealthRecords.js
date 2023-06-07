@@ -32,7 +32,7 @@ const HealthRecords = () => {
 
 
   const testTypeOptions = [
-    { label: "Lab Test", value: "lab" },
+    { label: "Select Test Type ", value: "select" },
     { label: "Radiology Report", value: "radiology" },
     { label: "Medication List", value: "medication" },
     { label: "Imaging tests", value: "imaging" },
@@ -193,7 +193,7 @@ const handleSubmit = async () => {
               style={styles.dropdown}
               onValueChange={(itemValue) => setTestType(itemValue)}
             >
-              <Picker.Item label="Lab Test" value="lab" />
+              <Picker.Item label="Select Test Type" value="select" />
               <Picker.Item label="Radiology Report" value="radiology" />
               <Picker.Item label="Medication List" value="medication" />
               <Picker.Item label="Imaging tests" value="imaging" />

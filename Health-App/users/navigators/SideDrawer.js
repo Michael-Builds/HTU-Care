@@ -10,6 +10,7 @@ import {
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import BottomTabNavigator from "./BottomTabNavigator";
 import HealthRecords from "../screens/HealthRecords";
+import ViewRecords from '../screens/ViewRecords';
 import PasswordUpdate from "../screens/PasswordUpdate";
 import Logout from "../screens/Logout";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -178,6 +179,39 @@ const CustomDrawerContent = (props) => {
           </Text>
         </TouchableOpacity>
 
+          {/* View Records Tab */}
+          <TouchableOpacity
+          style={{
+            marginTop: 20,
+            flexDirection: "row",
+            marginBottom: 15,
+            marginLeft: 20,
+            alignItems: "center",
+          }}
+          onPress={() => props.navigation.navigate("ViewRecords")}
+        >
+          <Image
+            style={{
+              width: 35,
+              height: 35,
+              marginLeft: 15,
+              tintColor: "#007bff",
+            }}
+            source={require("../../assets/images/patient.png")}
+            resizeMode="contain"
+          />
+          <Text
+            style={{
+              marginLeft: 20,
+              fontSize: 17,
+              color: "#007bff",
+              fontWeight: "bold",
+            }}
+          >
+           View  Records
+          </Text>
+        </TouchableOpacity>
+
         {/* Records Update Section */}
         <TouchableOpacity
           style={{
@@ -267,6 +301,11 @@ const SideDrawer = () => {
       <Drawer.Screen
         name="HealthRecords"
         component={HealthRecords}
+        options={{ headerShown: false }}
+      />
+      <Drawer.Screen
+        name="ViewRecords"
+        component={ViewRecords}
         options={{ headerShown: false }}
       />
 

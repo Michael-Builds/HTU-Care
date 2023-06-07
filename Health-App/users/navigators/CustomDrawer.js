@@ -9,23 +9,7 @@ const CustomDrawer = ({ title, isHome }) => {
     navigation.goBack();
   };
 
-  //date and useStates
-  const [dateTime, setDateTime] = useState("");
-
-  //useEffect that handles the date and time
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      const now = new Date();
-      const date = now.toLocaleDateString();
-      const time = now.toLocaleTimeString();
-      setDateTime(`${time}\n${date}`);
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-
-  //Opening a navigation Drawer
+  // Opening a navigation Drawer
   const openDrawer = () => {
     navigation.openDrawer();
   };
@@ -63,7 +47,7 @@ const CustomDrawer = ({ title, isHome }) => {
         </TouchableOpacity>
       )}
 
-      {/*   Header View */}
+      {/* Header View */}
       <View
         style={{
           flex: 25,
@@ -71,22 +55,11 @@ const CustomDrawer = ({ title, isHome }) => {
           alignItems: "center",
         }}
       >
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text style={{ textAlign: "center", fontSize: 12, color: "#191970", }}>
-            {dateTime}
-          </Text>
-        </View>
       </View>
-
-      {/* Notification Icon View */}
-      {/* <View
-        style={{ flex: 1, justifyContent: "center", alignItems: "flex-end" }}
-      ></View> */}
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   Back: {
     marginLeft: 5,

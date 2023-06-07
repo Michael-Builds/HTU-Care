@@ -18,7 +18,7 @@ import walk from "../../assets/images/walk.png";
 import yoga from "../../assets/images/yoga.png";
 import cycle from "../../assets/images/cycle.png";
 import next from "../../assets/images/next.png";
-import Video from 'react-native-video';
+
 
 
 const Home = () => {
@@ -38,16 +38,7 @@ const Home = () => {
       { id: 4, url: '../../assets/images/Health.mp4' },
   ];
 
-  const VideoList = () => {
-    const [currentPage, setCurrentPage] = useState(0);
-  
-    const handlePageChange = (event) => {
-      const page = Math.round(event.nativeEvent.contentOffset.x / width);
-      setCurrentPage(page);
-    };  
-  };
-  
-    
+
 
   // Data variables
   const data = [

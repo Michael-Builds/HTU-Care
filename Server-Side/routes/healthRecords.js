@@ -49,4 +49,15 @@ router.post("/health-records", async (req, res) => {
   }
 });
 
+// GET /health-records - Fetch all health records
+router.get('/health-records', async (req, res) => {
+  try {
+    const healthRecords = await HealthRecord.find();
+    res.json(healthRecords);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch health records' });
+  }
+});
+
 module.exports = router;
