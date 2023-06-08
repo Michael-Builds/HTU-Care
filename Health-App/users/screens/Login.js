@@ -119,8 +119,6 @@ const Login = () => {
               placeholderTextColor="#6b7280"
               style={styles.inputControl}
               value={email}
-              caretHidden={false}
-              caretColor="#191970"
             />
           </View>
 
@@ -136,8 +134,7 @@ const Login = () => {
                 style={[styles.inputControl, { flex: 1, borderRightWidth: 1 }]}
                 secureTextEntry={!showPassword}
                 value={password}
-                caretHidden={false}
-                caretColor="#191970"
+                autoCapitalize="words"
               />
               <View style={{ position: "absolute", right: 8 }}>
                 <TouchableOpacity

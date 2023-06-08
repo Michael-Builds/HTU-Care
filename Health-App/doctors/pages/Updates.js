@@ -11,21 +11,21 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import CustomDrawer from "../navigators/CustomDrawer";
+import CustomDrawer from "../navigations/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import axios from "axios";
 
-const PasswordUpdate = () => {
+const Update = () => {
   const navigation = useNavigation();
-  const [currentPassword, setCurrentPassword] = useState("");
+  const [newUsername, setNewUsername] = useState("");
+  const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  
+
   //Password Strenght Validation
-  const validatePassword = (currentPassword, newPassword) => {
+  const validatePassword = (password) => {
     // Regular expressions to check for password requirements
     const uppercaseRegex = /[A-Z]/;
     const lowercaseRegex = /[a-z]/;
@@ -33,18 +33,16 @@ const PasswordUpdate = () => {
     const symbolRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/;
 
     // Check password length
-    if (currentPassword.length < 8 || newPassword.length < 8) {
+    if (newPassword.length < 8) {
       return false;
     }
 
     // Check for uppercase, lowercase, number, and symbol
     if (
-      (!uppercaseRegex.test(currentPassword) ||
-        !uppercaseRegex.test(newPassword),
-      !lowercaseRegex.test(currentPassword) ||
-        !lowercaseRegex.test(newPassword),
-      !numberRegex.test(currentPassword) || !numberRegex.test(newPassword),
-      !symbolRegex.test(currentPassword) || !symbolRegex.test(newPassword))
+      !uppercaseRegex.test(newPassword) ||
+      !lowercaseRegex.test(newPassword) ||
+      !numberRegex.test(newPassword) ||
+      !symbolRegex.test(newPassword)
     ) {
       return false;
     }
@@ -52,8 +50,18 @@ const PasswordUpdate = () => {
     return true;
   };
 
-  handleSubmit = async (userId, CurrentPassword, NewPassword) => {
-    if (!validatePassword(currentPassword && newPassword)) {
+  //Email Validity
+  const isEmailValid = (newEmail) => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return emailRegex.test(newEmail);
+  };
+
+  const handleSubmit = async () => {
+    if (!isEmailValid(newEmail)) {
+      Alert.alert("Invalid Email", "Please enter a valid email address");
+      return;
+    }
+    if (!validatePassword(newPassword)) {
       Alert.alert(
         "Invalid Password",
         "Password must contain at least one uppercase letter, one lowercase letter, one number, one symbol, and be at least 8 characters long"
@@ -61,31 +69,27 @@ const PasswordUpdate = () => {
       return;
     }
 
-    if (!currentPassword || !newPassword) {
-      Alert.alert("Error", "Please fill all the fields");
+    if (!newUsername && !newEmail && !newPassword) {
+      Alert.alert("Error", "Please fill at least one field");
       return;
     }
-    setLoading(true); // Set loading state to true
+    setLoading(true);
     try {
-      // Send the update password request with the obtained user ID
-      await axios.put(`http://192.168.43.237:4000/users/${userId}`, {
-        CurrentPassword,
-        NewPassword,
-      });
+      const userId = ""; // Replace with the user ID or retrieve it from your authentication system
+      const payload = {};
+      if (newUsername) payload.username = newUsername;
+      if (newEmail) payload.email = newEmail;
+      if (newPassword) payload.password = newPassword;
 
-      // Password updated successfully
-      Alert.alert("Success", "Your password has been updated.");
-      // Navigate to the home screen
+      // Send the update profile request with the obtained user ID
+      await axios.put(`http://192.168.43.237:4000/users/${userId}`, payload);
+
+      Alert.alert("Success", "Your profile has been updated.");
       navigation.navigate("Homes");
     } catch (error) {
-      // Error occurred while updating password
-      if (error.response.status === 401) {
-        Alert.alert("Error", "Invalid current password.");
-      } else {
-        Alert.alert("Error", "Failed to update password.");
-      }
+      Alert.alert("Error", "Failed to update profile.");
     } finally {
-      setLoading(false); // Set loading state back to false
+      setLoading(false);
     }
   };
 
@@ -96,7 +100,8 @@ const PasswordUpdate = () => {
         backgroundColor="#191970"
         barStyle="light-content"
       />
-      <CustomDrawer title="Password Update" navigation={navigation} />
+          <CustomDrawer navigation={navigation} />
+          
       <View style={styles.container}>
         <View style={styles.header}>
           <Image
@@ -104,49 +109,49 @@ const PasswordUpdate = () => {
             style={styles.headerImg}
             source={require("../../assets/images/Logo.png")}
           />
-
           <Text style={styles.title}>
-            Reset <Text style={{ color: "#075eec" }}>Password</Text>
+            Update <Text style={{ color: "#075eec" }}>Profile</Text>
           </Text>
-
           <Text style={styles.subtitle}>
             Get access to your portfolio and more
           </Text>
         </View>
-
         <View style={styles.form}>
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>Old Password</Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <TextInput
-                style={[styles.inputControl, { flex: 1, borderRightWidth: 1 }]}
-                autoCorrect={false}
-                placeholder="Old Password"
-                placeholderTextColor="#6b7280"
-                onChangeText={(text) => setCurrentPassword(text)}
-                value={currentPassword}
-                secureTextEntry={!showCurrentPassword}
-              />
-              <View style={{ position: "absolute", right: 8 }}>
-                <TouchableOpacity
-                  onPress={() => setShowCurrentPassword(!showCurrentPassword)}
-                >
-                  <MaterialIcons
-                    name={showCurrentPassword ? "visibility-off" : "visibility"}
-                    size={24}
-                    color="#6b7280"
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
+            <Text style={styles.inputLabel}>Username</Text>
+            <TextInput
+              autoCapitalize="words"
+              style={styles.inputControl}
+              autoCorrect={false}
+              value={newUsername}
+              onChangeText={(text) => setNewUsername(text)}
+              placeholder="New Username"
+              placeholderTextColor="#6b7280"
+            />
           </View>
-
+          <View style={styles.input}>
+            <Text style={styles.inputLabel}>Email</Text>
+            <TextInput
+              autoCapitalize="none"
+              style={styles.inputControl}
+              autoCorrect={false}
+              keyboardType="email-address"
+              value={newEmail}
+              onChangeText={(text) => setNewEmail(text)}
+              placeholder="New Email"
+              placeholderTextColor="#6b7280"
+            />
+          </View>
           <View style={styles.input}>
             <Text style={styles.inputLabel}>New Password</Text>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <TextInput
-                style={[styles.inputControl, { flex: 1, borderRightWidth: 1 }]}
+                style={[
+                  styles.inputControl,
+                  { flex: 1, borderRightWidth: 1, borderColor: "#ccc" },
+                ]}
                 autoCorrect={false}
+                autoCapitalize="words"
                 value={newPassword}
                 onChangeText={(text) => setNewPassword(text)}
                 placeholder="New Password"
@@ -169,11 +174,7 @@ const PasswordUpdate = () => {
           </View>
 
           <View style={styles.formAction}>
-            <TouchableOpacity
-              onPress={() => {
-                handleSubmit();
-              }}
-            >
+            <TouchableOpacity onPress={handleSubmit}>
               <View style={styles.btn}>
                 {loading ? (
                   <View style={styles.loaderContainer}>
@@ -181,7 +182,7 @@ const PasswordUpdate = () => {
                     <Text style={styles.loaderText}>Please wait...</Text>
                   </View>
                 ) : (
-                  <Text style={styles.btnText}>Reset Password</Text>
+                  <Text style={styles.btnText}>Update</Text>
                 )}
               </View>
             </TouchableOpacity>
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    marginTop: -25,
+    marginTop: -40,
   },
   header: {
     marginVertical: 36,
@@ -207,13 +208,13 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     alignSelf: "center",
-    marginBottom: 36,
+    marginBottom: 20,
   },
   title: {
     fontSize: 21,
     fontWeight: "600",
     color: "#1d1d1d",
-    marginBottom: 8,
+    marginBottom: 5,
     textAlign: "center",
   },
   subtitle: {
@@ -224,13 +225,13 @@ const styles = StyleSheet.create({
   },
 
   input: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   inputLabel: {
     fontSize: 17,
     fontWeight: "500",
-    color: "#222",
-    marginBottom: 10,
+    color: "#333",
+    marginBottom: 5,
   },
   inputControl: {
     height: 44,
@@ -238,39 +239,37 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     paddingHorizontal: 16,
     borderRadius: 5,
-    fontSize: 15,
-    color: "#222",
+    fontSize: 14,
+    color: "#9CA3AF",
   },
   formAction: {
     marginVertical: 24,
-    marginBottom: 10,
+    marginBottom: 5,
   },
   btn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderWidth: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     backgroundColor: "#075eec",
-    borderColor: "#075eec",
   },
   btnText: {
-    fontSize: 17,
-    lineHeight: 26,
-    fontWeight: "500",
     color: "#fff",
+    fontSize: 17,
+    fontWeight: "600",
   },
   loaderContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
   },
   loaderText: {
-    marginLeft: 10,
+    marginLeft: 8,
     color: "#fff",
+    fontSize: 17,
+    fontWeight: "600",
   },
 });
 
-export default PasswordUpdate;
+export default Update;

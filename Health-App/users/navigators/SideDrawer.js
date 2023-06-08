@@ -10,8 +10,8 @@ import {
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import BottomTabNavigator from "./BottomTabNavigator";
 import HealthRecords from "../screens/HealthRecords";
-import ViewRecords from '../screens/ViewRecords';
-import PasswordUpdate from "../screens/PasswordUpdate";
+import ViewRecords from "../screens/ViewRecords";
+import PasswordUpdate from "../screens/Update";
 import Logout from "../screens/Logout";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -69,13 +69,11 @@ const CustomDrawerContent = (props) => {
         >
           <Image
             style={{
-              marginBottom: 12,
-              height: 70,
-              width: 70,
-              borderRadius: 20,
-              tintColor: "#007bff",
+              marginBottom: 5,
+              height: 65,
+              width: 65,
             }}
-            source={require("../../assets/images/User.png")}
+            source={require("../../assets/images/account.png")}
           />
         </View>
       </View>
@@ -90,11 +88,11 @@ const CustomDrawerContent = (props) => {
           <Text
             style={{
               justifyContent: "center",
-              fontSize: 18,
+              fontSize: 17,
               fontWeight: "bold",
               marginBottom: 5,
               textAlign: "center",
-              color: "#6b7280",
+              color: "#333",
             }}
           >
             {username}
@@ -102,9 +100,9 @@ const CustomDrawerContent = (props) => {
           <Text
             style={{
               justifyContent: "center",
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: "normal",
-              marginBottom: 10,
+              marginBottom: 20,
               textAlign: "center",
               color: "#9CA3AF",
             }}
@@ -116,7 +114,7 @@ const CustomDrawerContent = (props) => {
         {/* Home Tab */}
         <TouchableOpacity
           style={{
-            marginTop: 25,
+            marginTop: 30,
             flexDirection: "row",
             marginBottom: 15,
             marginLeft: 20,
@@ -126,30 +124,29 @@ const CustomDrawerContent = (props) => {
         >
           <Image
             style={{
-              width: 45,
-              height: 45,
-              marginLeft: 10,
-              tintColor: "#007bff",
+              width: 35,
+              height: 35,
+              marginLeft: 20,
             }}
-            source={require("../../assets/images/home.png")}
+            source={require("../../assets/images/Dashboard.png")}
             resizeMode="contain"
           />
           <Text
             style={{
               marginLeft: 20,
               fontSize: 17,
-              color: "#007bff",
+              color: "#333",
               fontWeight: "bold",
             }}
           >
-            Main
+            Dashboard
           </Text>
         </TouchableOpacity>
 
         {/* Records Tab */}
         <TouchableOpacity
           style={{
-            marginTop: 20,
+            marginTop: 10,
             flexDirection: "row",
             marginBottom: 15,
             marginLeft: 20,
@@ -161,17 +158,16 @@ const CustomDrawerContent = (props) => {
             style={{
               width: 35,
               height: 35,
-              marginLeft: 15,
-              tintColor: "#007bff",
+              marginLeft: 20,
             }}
-            source={require("../../assets/images/patient.png")}
+            source={require("../../assets/images/medical-report.png")}
             resizeMode="contain"
           />
           <Text
             style={{
               marginLeft: 20,
               fontSize: 17,
-              color: "#007bff",
+              color: "#333",
               fontWeight: "bold",
             }}
           >
@@ -179,10 +175,10 @@ const CustomDrawerContent = (props) => {
           </Text>
         </TouchableOpacity>
 
-          {/* View Records Tab */}
-          <TouchableOpacity
+        {/* View Records Tab */}
+        <TouchableOpacity
           style={{
-            marginTop: 20,
+            marginTop: 10,
             flexDirection: "row",
             marginBottom: 15,
             marginLeft: 20,
@@ -194,7 +190,7 @@ const CustomDrawerContent = (props) => {
             style={{
               width: 35,
               height: 35,
-              marginLeft: 15,
+              marginLeft: 20,
               tintColor: "#007bff",
             }}
             source={require("../../assets/images/patient.png")}
@@ -204,11 +200,11 @@ const CustomDrawerContent = (props) => {
             style={{
               marginLeft: 20,
               fontSize: 17,
-              color: "#007bff",
+              color: "#333",
               fontWeight: "bold",
             }}
           >
-           View  Records
+            View Records
           </Text>
         </TouchableOpacity>
 
@@ -227,21 +223,20 @@ const CustomDrawerContent = (props) => {
             style={{
               width: 35,
               height: 35,
-              marginLeft: 15,
-              tintColor: "#007bff",
+              marginLeft: 20,
             }}
-            source={require("../../assets/images/change.png")}
+            source={require("../../assets/images/update.png")}
             resizeMode="contain"
           />
           <Text
             style={{
               marginLeft: 20,
               fontSize: 17,
-              color: "#007bff",
+              color: "#333",
               fontWeight: "bold",
             }}
           >
-            Password Update
+            Profile Update
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -250,7 +245,7 @@ const CustomDrawerContent = (props) => {
       <TouchableOpacity
         style={{
           flexDirection: "row",
-          marginBottom: 90,
+          marginBottom: 100,
           marginLeft: 20,
           alignItems: "center",
         }}
@@ -274,14 +269,21 @@ const CustomDrawerContent = (props) => {
           );
         }}
       >
-        <Text style={{ marginLeft: 15, fontSize: 16, color: "red" }}>
-          Logout
-        </Text>
         <Image
-          style={{ width: 25, height: 25, marginLeft: 10, tintColor: "red" }}
+          style={{ width: 40, height: 40, marginLeft: 25 }}
           source={require("../../assets/images/logout.png")}
           resizeMode="contain"
         />
+        <Text
+          style={{
+            marginLeft: 20,
+            fontSize: 17,
+            color: "#333",
+            fontWeight: "bold",
+          }}
+        >
+          Logout
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

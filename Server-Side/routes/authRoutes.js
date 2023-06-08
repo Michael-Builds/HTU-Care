@@ -8,7 +8,6 @@ const dotenv = require("dotenv");
 //dotenv config
 dotenv.config();
 
-
 //Push Request for signup
 router.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
@@ -23,13 +22,12 @@ router.post("/signup", async (req, res) => {
     await user.save();
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-   
+
     res.send({ token, userID: user._id });
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
-
 
 //Pull Request for login
 router.post("/login", async (req, res) => {
@@ -60,7 +58,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
 //Endpoint for user role
 router.get("/user-role", async (req, res) => {
   try {
@@ -82,8 +79,6 @@ router.get("/user-role", async (req, res) => {
   }
 });
 
-
-
 // GET request to fetch the counts
 router.get("/admin/dashboard", async (req, res) => {
   try {
@@ -102,25 +97,38 @@ router.get("/admin/dashboard", async (req, res) => {
   }
 });
 
-
-// PUT endpoint for updating user information, including password
-router.put("/users/:userId", async (req, res) => {
-  const { userId } = req.params;
-  const { CurrentPassword, NewPassword, ...updates } = req.body;
+// PUT endpoint for updating user information, including email, password, and username
+router.put("/users", async (req, res) => {
+  const { email, username, currentPassword, newPassword } = req.body;
 
   try {
-    const user = await User.findById(userId);
+    let user;
+    if (email) {
+      user = await User.findOne({ email });
+    } else if (username) {
+      user = await User.findOne({ username });
+    }
+
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Update the user's password if current password matches
-    if (CurrentPassword && NewPassword) {
-      await user.updatePassword(CurrentPassword, NewPassword);
+    // Update the user's password if current password and newPassword are provided
+    if (currentPassword && newPassword) {
+      await user.updatePassword(currentPassword, newPassword);
     }
 
-    // Update other fields of the user
-    Object.assign(user, updates);
+    // Update the user's email if provided
+    if (email) {
+      user.email = email;
+    }
+
+    // Update the user's username if provided
+    if (username) {
+      user.username = username;
+    }
+
+    // Save the updated user
     await user.save();
 
     res.json({ message: "User updated successfully" });

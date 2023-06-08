@@ -10,6 +10,7 @@ import {
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import BottomTabNav from "./BottomTabNav";
 import Signout from "../screen/Signout";
+import ProfileUpdate from "../screen/ProfileUpdate";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -66,13 +67,11 @@ const CustomDrawerContent = (props) => {
         >
           <Image
             style={{
-              marginBottom: 12,
-              height: 70,
-              width: 70,
-              borderRadius: 20,
-              tintColor: "#007bff",
+              marginBottom: 5,
+              height: 65,
+              width: 65,
             }}
-            source={require("../../assets/images/User.png")}
+            source={require("../../assets/images/account.png")}
           />
         </View>
       </View>
@@ -87,11 +86,11 @@ const CustomDrawerContent = (props) => {
           <Text
             style={{
               justifyContent: "center",
-              fontSize: 18,
+              fontSize: 17,
               fontWeight: "bold",
               marginBottom: 5,
               textAlign: "center",
-              color: "#6b7280",
+              color: "#333",
             }}
           >
             {username}
@@ -99,7 +98,7 @@ const CustomDrawerContent = (props) => {
           <Text
             style={{
               justifyContent: "center",
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: "normal",
               marginBottom: 10,
               textAlign: "center",
@@ -123,25 +122,57 @@ const CustomDrawerContent = (props) => {
         >
           <Image
             style={{
-              width: 45,
-              height: 45,
-              marginLeft: 10,
-              tintColor: "#007bff",
+              width: 40,
+              height: 40,
+              marginLeft: 20,
             }}
-            source={require("../../assets/images/route.png")}
+            source={require("../../assets/images/Dashboard.png")}
             resizeMode="contain"
           />
           <Text
             style={{
               marginLeft: 20,
               fontSize: 17,
-              color: "#007bff",
+              color: "#333",
               fontWeight: "bold",
             }}
           >
-            Main
+            Dashboard
           </Text>
         </TouchableOpacity>
+
+        {/* Profile Update */}
+        <TouchableOpacity
+          style={{
+            marginTop: 10,
+            flexDirection: "row",
+            marginBottom: 15,
+            marginLeft: 20,
+            alignItems: "center",
+          }}
+          onPress={() => props.navigation.navigate("ProfileUpdate")}
+        >
+          <Image
+            style={{
+              width: 35,
+              height: 35,
+              marginLeft: 20,
+            }}
+            source={require("../../assets/images/update.png")}
+            resizeMode="contain"
+          />
+          <Text
+            style={{
+              marginLeft: 20,
+              fontSize: 17,
+              color: "#333",
+              fontWeight: "bold",
+            }}
+          >
+             Profile Update
+          </Text>
+        </TouchableOpacity>
+        
       </ScrollView>
 
       {/* Logout Tab */}
@@ -172,14 +203,21 @@ const CustomDrawerContent = (props) => {
           );
         }}
       >
-        <Text style={{ marginLeft: 15, fontSize: 16, color: "red" }}>
-          Logout
-        </Text>
         <Image
-          style={{ width: 25, height: 25, marginLeft: 10, tintColor: "red" }}
+          style={{ width: 40, height: 40, marginLeft: 25 }}
           source={require("../../assets/images/logout.png")}
           resizeMode="contain"
         />
+        <Text
+          style={{
+            marginLeft: 20,
+            fontSize: 17,
+            color: "#333",
+            fontWeight: "bold",
+          }}
+        >
+          Logout
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -194,6 +232,11 @@ const SideDraw = () => {
       <Drawer.Screen
         name="Menu"
         component={BottomTabNav}
+        options={{ headerShown: false }}
+      />
+       <Drawer.Screen
+        name="ProfileUpdate"
+        component={ProfileUpdate}
         options={{ headerShown: false }}
       />
 

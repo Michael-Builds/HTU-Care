@@ -21,7 +21,6 @@ const appointmentRoutes = require("./routes/appointmentRoutes");
 const healthRecordsRouter = require("./routes/healthRecords");
 
 
-
 app.use(bodyParser.json());
 app.use(authRoutes);
 app.use(appointmentRoutes);

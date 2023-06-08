@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   StatusBar,
-  SafeAreaView,
   ImageBackground,
   Image,
   Dimensions,
