@@ -154,7 +154,6 @@ userSchema.methods.isUserPasswordValid = function (password) {
 
 // Method to validate password for admin role
 userSchema.methods.isAdminPasswordValid = function (password) {
-
   if (
     password.length < 8 ||
     !/[A-Z]/.test(password) ||
@@ -176,7 +175,6 @@ userSchema.methods.isCommonPassword = function (password) {
 
 // Method to check if the password is based on commonly used patterns
 userSchema.methods.isCommonPattern = function (password) {
-
   const sequentialPatterns = [
     "12345678",
     "abcdefgh",
@@ -186,4 +184,5 @@ userSchema.methods.isCommonPattern = function (password) {
   return sequentialPatterns.includes(password);
 };
 
-mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+module.exports = User;

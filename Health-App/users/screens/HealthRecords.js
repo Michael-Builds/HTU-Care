@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomDrawer from "../navigators/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
@@ -29,7 +29,6 @@ const HealthRecords = () => {
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
-
 
   const testTypeOptions = [
     { label: "Select Test Type ", value: "select" },
@@ -68,72 +67,82 @@ const HealthRecords = () => {
     ))}
   </Picker>;
 
+  const handleSubmit = async () => {
+    const healthRecordData = {
+      fullName,
+      email,
+      facility,
+      healthProvider,
+      testType,
+      date,
+    };
 
-//handle submit button
-const handleSubmit = async () => {
-  const healthRecordData = {
-    fullName,
-    email,
-    facility,
-    healthProvider,
-    testType,
-    date,
-  };
+    try {
+      setLoading(true);
 
-  try {
-    setLoading(true);
+      // Retrieve the token from AsyncStorage or any other storage mechanism
+      const token = await AsyncStorage.getItem("token");
 
-    // Retrieve the token from AsyncStorage or any other storage mechanism
-    const token = await AsyncStorage.getItem("token");
+      // Make a POST request to the backend API to upload the health record
+      const uploadResponse = await fetch(
+        "http://192.168.43.237:4000/health-records",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(healthRecordData),
+        }
+      );
 
-    // Make a POST request to the backend API to upload the health record
-    const uploadResponse = await fetch("http://192.168.43.237:4000/health-records", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(healthRecordData),
-    });
+      if (uploadResponse.ok) {
+        const responseData = await uploadResponse.json();
 
-    if (uploadResponse.ok) {
-      const responseData = await uploadResponse.json();
+        if (uploadResponse.status === 201) {
+          Alert.alert("Success", "Health record uploaded successfully");
 
-      if (uploadResponse.status === 201) {
-        Alert.alert("Success", "Health record uploaded successfully");
+          // Reset the form fields
+          setFullName("");
+          setEmail("");
+          setFacility("");
+          setHealthProvider("");
+          setTestType("");
+          setDate(new Date());
 
-        // Reset the form fields
-        setFullName("");
-        setEmail("");
-        setFacility("");
-        setHealthProvider("");
-        setTestType("");
-        setDate(new Date());
-        
           // Navigate back to the appointments screen
           navigation.navigate("Homes");
+        } else {
+          Alert.alert(
+            "Error",
+            responseData.error || "Failed to upload health record"
+          );
+        }
+      } else if (uploadResponse.status === 400) {
+        const responseData = await uploadResponse.json();
+        Alert.alert(
+          "Error",
+          responseData.error || "Maximum limit reached for bookings"
+        );
+      } else if (uploadResponse.status === 404) {
+        const responseData = await uploadResponse.json();
+        Alert.alert("Error", responseData.error || "No doctor found");
       } else {
-        Alert.alert("Error", responseData.error || "Failed to upload health record");
+        Alert.alert("Error", "Failed to upload health record");
       }
-    } else if (uploadResponse.status === 403) {
-      const responseData = await uploadResponse.json();
-      Alert.alert("Error", responseData.error || "Maximum limit reached for today");
-    } else {
-      Alert.alert("Error", "Failed to upload health record");
-    }
-  } catch (error) {
-    console.error(error);
+    } catch (error) {
+      console.error(error);
 
-    if (error.message && !error.message.includes("Failed to fetch")) {
-      Alert.alert(
-        "Error",
-        error.message || "An error occurred. Please try again later."
-      );
+      if (error.message && !error.message.includes("Failed to fetch")) {
+        Alert.alert(
+          "Error",
+          error.message || "An error occurred. Please try again later."
+        );
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <KeyboardAvoidingView

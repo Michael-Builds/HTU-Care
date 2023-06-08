@@ -1,57 +1,88 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
 const router = express.Router();
-const dotenv = require("dotenv");
-
-// dotenv config
-dotenv.config();
-
-//callbacks for the models of our user and appointment
-const User = require("../models/User");
 const Appointment = require("../models/Appointment");
+const User = require("../models/User");
+const moment = require("moment");
 
-// Endpoint for booking an appointment
 router.post("/appointments", async (req, res) => {
-  const { fullName, email, date, time, condition } = req.body;
-
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decodedToken.userId;
-    const userRole = decodedToken.role;
+    const { email, fullName, date, time, condition } = req.body;
 
-    if (userRole !== "user") {
-      return res
-        .status(403)
-        .send("Access denied. Only users can book appointments.");
-    }
+    // Find the user based on the email address
+    const user = await User.findOne({ email });
 
-    const user = await User.findById(userId).exec(); // Use await and exec() to wait for the query to execute
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(404).json({ error: "User not found" });
     }
 
+    // Find the user with the role of "doctor"
+    const doctor = await User.findOne({ role: "doctor" });
+
+    if (!doctor) {
+      return res.status(404).json({ error: "No doctor found" });
+    }
+
+    // Check if the user has already booked two appointments
+    const appointmentCount = await Appointment.countDocuments({
+      user: user._id,
+    });
+
+    if (appointmentCount >= 2) {
+      return res
+        .status(400)
+        .json({ error: "User has already booked two appointments" });
+    }
+
+    // Convert the date string to a Date object
+    const formattedDate = new Date(date);
+
+    // Convert the time string to a Date object
+    const formattedTime = moment(time, "h:mm A").toDate();
+
+    // Create a new appointment instance
     const appointment = new Appointment({
+      doctor: doctor._id,
       user: user._id,
       fullName,
       email,
-      date,
-      time,
+      date: formattedDate,
+      time: formattedTime,
       condition,
     });
+
+    // Save the appointment to the database
     await appointment.save();
 
-    const doctors = await User.find({ role: "doctor" });
+    // Format the appointment summary for the doctor
+    const appointmentSummary = `
+      Appointment Details:
+      Patient: ${fullName}
+      Email: ${email}
+      Date: ${formattedDate.toLocaleDateString()}
+      Time: ${moment(formattedTime).format("h:mm A")}
+      Condition: ${condition}
+    `;
 
-    for (const doctor of doctors) {
-      doctor.appointments.push(appointment);
-      await doctor.save();
-    }
-
-    res.status(201).json({ message: "Appointment booked successfully" });
+    res.status(201).json({
+      message: "Appointment booked successfully",
+      appointment: appointmentSummary,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to book appointment" });
+  }
+});
+
+// Endpoint to get the count of appointments
+router.get("/appointments/count", async (req, res) => {
+  try {
+    // Get the count of appointments
+    const count = await Appointment.countDocuments();
+
+    res.status(200).json({ count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to get appointment count" });
   }
 });
 

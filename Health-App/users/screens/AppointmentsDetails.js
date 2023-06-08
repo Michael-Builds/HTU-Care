@@ -3,6 +3,7 @@ import {
   View,
   Text,
   Image,
+  Alert,
   TextInput,
   StyleSheet,
   StatusBar,
@@ -14,9 +15,12 @@ import {
 } from "react-native";
 import axios from "axios";
 import CustomDrawer from "../navigators/CustomDrawer";
+import { useNavigation } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 const AppointmentsDetails = () => {
+  const navigation = useNavigation();
+
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [date, setDate] = useState(new Date());
@@ -28,13 +32,13 @@ const AppointmentsDetails = () => {
 
   const handleDateChange = (_, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShowDatePicker(Platform.OS === "ios");
+    setShowDatePicker(false); // Use false to hide the date picker
     setDate(currentDate);
   };
 
   const handleTimeChange = (_, selectedTime) => {
     const currentTime = selectedTime || time;
-    setShowTimePicker(Platform.OS === "ios");
+    setShowTimePicker(false); // Use false to hide the time picker
     setTime(currentTime);
   };
 
@@ -46,30 +50,42 @@ const AppointmentsDetails = () => {
     return true;
   };
 
+  // Format the date and time to local short strings
+  const formatLocalDate = (date) => {
+    return date.toLocaleDateString();
+  };
+
+  const formatLocalTime = (time) => {
+    return time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
   const handleSubmit = async () => {
     if (!isFormValid()) {
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
+
+    const formattedDate = formatLocalDate(date);
+    const formattedTime = formatLocalTime(time);
+
+    const appointmentData = {
+      fullName,
+      email,
+      date: formattedDate,
+      time: formattedTime,
+      condition,
+    };
+
     try {
       setLoading(true);
 
-      const appointmentData = {
-        fullName,
-        email,
-        date,
-        time,
-        condition,
-      };
-
       // Send a POST request to the backend API endpoint
       const response = await axios.post(
-        "http://192.168.237:4000/appointments",
+        "http://192.168.43.237:4000/appointments",
         appointmentData
       );
 
       console.log(response.data); // Appointment booked successfully message or other response from the backend
-
       // Reset form fields
       setFullName("");
       setEmail("");
@@ -78,6 +94,8 @@ const AppointmentsDetails = () => {
       setCondition("");
 
       Alert.alert("Success", "Appointment booked successfully!");
+      // Navigate back to the appointments screen
+      navigation.navigate("Homes");
     } catch (error) {
       console.error(error);
       if (error.message === "Network Error") {
@@ -85,6 +103,8 @@ const AppointmentsDetails = () => {
           "Network Error",
           "Please check your internet connection and try again."
         );
+      } else if (error.response && error.response.status === 404) {
+        Alert.alert("Error", "No doctor found. Please try again later.");
       } else {
         Alert.alert("Error", "Failed to book appointment. Please try again.");
       }
@@ -139,7 +159,7 @@ const AppointmentsDetails = () => {
             <DateTimePicker
               value={date}
               mode="date"
-              onChange={(date) => handleDateChange(date)}
+              onChange={handleDateChange}
             />
           )}
           <TouchableOpacity onPress={() => setShowTimePicker(true)}>
@@ -149,7 +169,7 @@ const AppointmentsDetails = () => {
             <DateTimePicker
               value={time}
               mode="time"
-              onChange={(time) => handleTimeChange(time)}
+              onChange={handleTimeChange}
             />
           )}
           <TextInput

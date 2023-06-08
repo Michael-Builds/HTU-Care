@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, View, Text } from "react-native";
 import HomeStack from "../components/HomeStack";
@@ -15,6 +15,7 @@ const notification = "Notification";
 const message = "Message";
 
 const BottomTabNavigator = () => {
+  
   return (
     <Tab.Navigator
       initialRouteName={home}
@@ -22,7 +23,7 @@ const BottomTabNavigator = () => {
         headerShown: false,
         tabBarStyle: {
           display: "flex",
-          // borderTopLeftRadius: 20, 
+          // borderTopLeftRadius: 20,
           // borderTopRightRadius: 20, // add this line
         },
         tabBarActiveTintColor: "#191970",
