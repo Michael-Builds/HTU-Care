@@ -85,7 +85,7 @@ const HealthRecords = () => {
 
       // Make a POST request to the backend API to upload the health record
       const uploadResponse = await fetch(
-        "http://localhost:4000/health-records",
+        "http://192.168.43.237:4000/health-records",
         {
           method: "POST",
           headers: {

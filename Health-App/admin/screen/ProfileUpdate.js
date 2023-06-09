@@ -38,7 +38,7 @@ const ProfileUpdate = () => {
       if (newPassword) payload.newPassword = newPassword;
   
       // Send the update profile request
-      await axios.put(`http://localhost:4000/users`, payload);
+      await axios.put(`http://192.168.43.237:4000/users`, payload);
   
       Alert.alert("Success", "Your profile has been updated.");
   

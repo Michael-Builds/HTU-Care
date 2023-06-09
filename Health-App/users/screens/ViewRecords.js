@@ -40,7 +40,7 @@ const ViewRecords = () => {
   const fetchHealthRecords = async () => {
     try {
       const response = await axios.get(
-        "http://localhost/health-records"
+        "http://192.168.43.237:4000/health-records"
       );
       const updatedRecords = response.data.map((record) => ({
         ...record,

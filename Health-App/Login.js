@@ -29,6 +29,8 @@ const Login = () => {
     navigation.navigate("Signup");
   };
 
+  
+
   handleSubmit = () => {
     //Email Validity
     const isEmailValid = (email) => {
@@ -46,7 +48,7 @@ const Login = () => {
       return;
     }
     setLoading(true);
-    fetch("http://localhost:4000/login", {
+    fetch("http://192.168.43.237:4000/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -26,7 +26,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:4000/admin/dashboard")
+    fetch("http://192.168.43.237:4000/admin/dashboard")
       .then((res) => res.json())
       .then((data) => {
         setUserCount(data.userCount);

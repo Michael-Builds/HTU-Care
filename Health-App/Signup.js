@@ -16,16 +16,6 @@ import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-//Underline beneath any separate column
-/* <View style = {{
-  borderBottomColor: 'blue',
-  borderBottomWidth: 4,
-  borderRadius: 10,
-  marginLeft: 20,
-  marginRight: 150,
-  marginTop: 4,
->  
-  <View/> */
 
 const SignUp = () => {
   const navigation = useNavigation();
@@ -80,7 +70,7 @@ const SignUp = () => {
       return;
     }
     setLoading(true);
-    fetch("http://localhost:4000/signup", {
+    fetch("http://192.168.43.237:4000/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

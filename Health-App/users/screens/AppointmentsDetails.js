@@ -81,7 +81,7 @@ const AppointmentsDetails = () => {
 
       // Send a POST request to the backend API endpoint
       const response = await axios.post(
-        "http://localhost:4000/appointments",
+        "http://192.168.43.237:4000/appointments",
         appointmentData
       );
 
