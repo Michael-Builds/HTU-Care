@@ -50,7 +50,7 @@ const Home = () => {
   const data = [
     {
       name: "Cycling",
-      status: 85,
+      status: 45,
       image: cycle,
       lightColor: "#f8e4d9",
       color: "#fcf1ea",
@@ -58,7 +58,7 @@ const Home = () => {
     },
     {
       name: "Walking",
-      status: 25,
+      status: 82,
       image: walk,
       lightColor: "#d7f0f7",
       color: "#e8f7fc",
@@ -66,7 +66,7 @@ const Home = () => {
     },
     {
       name: "Yoga",
-      status: 50,
+      status: 60,
       image: yoga,
       lightColor: "#dad5fe",
       color: "#e7e3ff",
@@ -253,14 +253,14 @@ const Home = () => {
                 borderRadius: 50,
                 backgroundColor: "#c5c5c5",
                 marginTop: 10,
-                marginBottom: 5,
+                marginBottom: 6,
               }}
             />
             <View>
               <Text
                 style={{
                   fontWeight: "bold",
-                  marginBottom: 5,
+                  marginBottom: 10,
                   fontSize: 14,
                   color: "#333",
                 }}
