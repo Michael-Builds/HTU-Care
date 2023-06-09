@@ -168,6 +168,7 @@ const Login = () => {
               </View>
             </TouchableOpacity>
           </View>
+     
           <View
             style={{
               flexDirection: "row",

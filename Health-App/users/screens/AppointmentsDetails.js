@@ -181,16 +181,25 @@ const AppointmentsDetails = () => {
             onChangeText={(text) => setCondition(text)}
           />
 
-          {loading ? (
-            <View style={styles.loaderContainer}>
-              <ActivityIndicator color="#075eec" />
-              <Text style={styles.loaderText}>Loading...</Text>
-            </View>
-          ) : (
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Book Now!</Text>
+          <View style={styles.formAction}>
+            <TouchableOpacity
+              onPress={() => {
+                handleSubmit();
+              }}
+            >
+              <View style={styles.btn}>
+                {loading ? (
+                  <View style={styles.loaderContainer}>
+                    <ActivityIndicator color="#fff" />
+                    <Text style={styles.loaderText}>Loading...</Text>
+                  </View>
+                ) : (
+                  <Text style={styles.buttonText}>Book Now!</Text>
+                )}
+              </View>
             </TouchableOpacity>
-          )}
+          </View>
+
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -260,12 +269,20 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: "top",
   },
-  button: {
-    backgroundColor: "#075eec",
-    paddingVertical: 15,
-    borderRadius: 5,
+   formAction: {
+    marginVertical: 24,
+    marginTop: 5,
+  },
+  btn: {
+    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: "#075eec",
+    borderColor: "#075eec",
   },
   loaderContainer: {
     flexDirection: "row",
@@ -278,8 +295,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
   },
 });
 

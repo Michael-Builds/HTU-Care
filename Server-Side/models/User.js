@@ -109,23 +109,19 @@ userSchema.methods.updateProfile = function (
   });
 };
 
-/// Method to validate password for doctor role
+// Method to validate password for doctor role
 userSchema.methods.isDoctorPasswordValid = function (password) {
-  // Example password validation logic for doctor role
-  // Assuming the doctor's password must be at least 8 characters long
+ // Doctor's password must be at least 8 characters long
   if (password.length < 8) {
     return false;
   }
-  // Add more validation rules specific to the doctor role if needed
+
   return true;
 };
+
 // Method to validate password for doctor role
 userSchema.methods.isDoctorPasswordValid = function (password) {
-  // Example password validation logic for doctor role
-  // Assuming the doctor's password must be at least 8 characters long
-  // Password must contain at least one lowercase letter
-  // Password must contain at least one special character (e.g., !@#$%^&*)
-  // Password must not contain the word "doctor" or any variation of it
+  
   if (
     password.length < 8 ||
     !/[a-z]/.test(password) ||
@@ -179,7 +175,6 @@ userSchema.methods.isCommonPattern = function (password) {
     "12345678",
     "abcdefgh",
     "qwertyui",
-    // Add more sequential patterns if needed
   ];
   return sequentialPatterns.includes(password);
 };

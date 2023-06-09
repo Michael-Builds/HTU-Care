@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,9 +6,7 @@ import {
   StatusBar,
   ImageBackground,
   Image,
-  Dimensions,
   ScrollView,
-  FlatList,
 } from "react-native";
 import * as Progress from "react-native-progress";
 import CustomDrawer from "../navigators/CustomDrawer";
@@ -17,27 +15,38 @@ import walk from "../../assets/images/walk.png";
 import yoga from "../../assets/images/yoga.png";
 import cycle from "../../assets/images/cycle.png";
 import next from "../../assets/images/next.png";
-
-
+import axios from "axios";
 
 const Home = () => {
   const navigation = useNavigation();
 
-  const HomeDetails = () => {
-    navigation.navigate("HomeDetails");
-  };
+  // Health tip state
+  const [healthTip, setHealthTip] = useState({ text: "", author: "" });
 
-    // Video components
-    const { width } = Dimensions.get('window');
+  // Fetch random health tip
+  useEffect(() => {
+    const fetchRandomHealthTip = async () => {
+      try {
+        const response = await axios.get(
+          "https://type.fit/api/quotes" 
+        );
+        const healthTips = response.data;
+        const randomIndex = Math.floor(Math.random() * healthTips.length);
+        const randomHealthTip = healthTips[randomIndex];
+        setHealthTip(randomHealthTip);
+      } catch (error) {
+        console.error("Failed to fetch random health tip:", error);
+      }
+    };
 
-    const videos = [
-      { id: 1, url: '../../assets/images/Fitness.mp4' },
-      { id: 2, url: '../../assets/images/Health.mp4' },
-      { id: 3, url: '../../assets/images/Fitness.mp4' },
-      { id: 4, url: '../../assets/images/Health.mp4' },
-  ];
+    fetchRandomHealthTip();
 
+    // Update health tip every 2 minutes
+    const intervalId = setInterval(fetchRandomHealthTip, 2 * 60 * 1000);
 
+    // Clean up the interval
+    return () => clearInterval(intervalId);
+  }, []);
 
   // Data variables
   const data = [
@@ -194,40 +203,79 @@ const Home = () => {
 
       {/* Activities Section */}
       <View style={{ marginHorizontal: "3%" }}>
-        <Text>Your Activities</Text>
+        <Text
+          style={{
+            fontWeight: "bold",
+            color: "#333",
+            marginTop: 5,
+            marginLeft: 10,
+          }}
+        >
+          Your Activities
+        </Text>
         <View style={{ flexDirection: "row" }}>
           {data.map((item, index) => (
             <Card key={index} data={item} index={index} />
           ))}
         </View>
 
-        {/* Videos Container */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: 15,
-          }}
-        >
-          <Text>Fitness Video</Text>
+        {/* Health Tips Container */}
+
+        <View style={{ marginTop: 15 }}>
           <Text
             style={{
-              opacity: 0.5,
-              fontSize: 12,
+              fontWeight: "bold",
+              color: "#333",
+              marginTop: 5,
+              marginLeft: 10,
             }}
           >
-            View All
+            Health Tips
           </Text>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          
-        </View>
-      </View>
 
-      {/* <TouchableOpacity style={{ marginTop: 20 }} onPress={HomeDetails}>
-          <Text>Go to Home Details!!</Text>
-        </TouchableOpacity> */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              alignItems: "flex-start",
+              marginTop: 15,
+              paddingHorizontal: 10,
+              backgroundColor: "#E7EAEA",
+              height: 160,
+              borderRadius: 15,
+              flexWrap: "wrap",
+            }}
+          >
+            <Image
+              source={require("../../assets/images/nurse.png")}
+              style={{
+                width: 50,
+                height: 50,
+                marginLeft: 10,
+                borderRadius: 50,
+                backgroundColor: "#c5c5c5",
+                marginTop: 10,
+                marginBottom: 5,
+              }}
+            />
+            <View>
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  marginBottom: 5,
+                  fontSize: 14,
+                  color: "#333",
+                }}
+              >
+               {healthTip.author}
+              </Text>
+              <Text style={{ flex: 1 }}>{healthTip.text}</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* <Text>Welcome</Text> */}
+      </View>
     </ScrollView>
   );
 };
