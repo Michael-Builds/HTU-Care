@@ -103,6 +103,8 @@ const AppointmentsDetails = () => {
           "Network Error",
           "Please check your internet connection and try again."
         );
+      } else if (error.response && error.response.status === 400) {
+        Alert.alert("Error", "User has already booked two appointments");
       } else if (error.response && error.response.status === 404) {
         Alert.alert("Error", "No doctor found. Please try again later.");
       } else {
@@ -199,7 +201,6 @@ const AppointmentsDetails = () => {
               </View>
             </TouchableOpacity>
           </View>
-
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: "top",
   },
-   formAction: {
+  formAction: {
     marginVertical: 24,
     marginTop: 5,
   },

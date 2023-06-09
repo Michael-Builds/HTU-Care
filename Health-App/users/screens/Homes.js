@@ -99,7 +99,7 @@ const Home = () => {
         <View style={{ alignSelf: "center", margin: 5 }}>
           <Progress.Circle
             size={50}
-            progress={data.status / 100} 
+            progress={data.status / 100}
             showsText={true}
             unfilledColor="#ededed"
             borderColor="#ededed"
@@ -239,7 +239,7 @@ const Home = () => {
               marginTop: 15,
               paddingHorizontal: 10,
               backgroundColor: "#E7EAEA",
-              height: 160,
+              height: 165,
               borderRadius: 15,
               flexWrap: "wrap",
             }}
@@ -253,26 +253,32 @@ const Home = () => {
                 borderRadius: 50,
                 backgroundColor: "#c5c5c5",
                 marginTop: 10,
-                marginBottom: 6,
+                marginBottom: 10,
               }}
             />
             <View>
               <Text
                 style={{
                   fontWeight: "bold",
-                  marginBottom: 10,
+                  marginBottom: 8,
                   fontSize: 14,
                   color: "#333",
+                  marginLeft: 10,
                 }}
               >
                 {healthTip.author}
               </Text>
-              <Text style={{ flex: 1 }}>{healthTip.text}</Text>
+              <Text
+                style={{
+                  flex: 1,
+                  marginLeft: 5,
+                }}
+              >
+                {healthTip.text}
+              </Text>
             </View>
           </View>
         </View>
-
-        {/* <Text>Welcome</Text> */}
       </View>
     </ScrollView>
   );
