@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
-
 //rest object
 const app = express();
 

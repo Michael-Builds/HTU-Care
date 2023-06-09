@@ -130,12 +130,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
     paddingVertical: 10,
   },
-  // footer:{
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  //   paddingVertical: 12,
-  //   marginBottom: -550,
-  // },
+
   logoContainer: {
     position: "absolute",
     alignItems: "center",

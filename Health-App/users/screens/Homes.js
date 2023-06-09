@@ -27,9 +27,7 @@ const Home = () => {
   useEffect(() => {
     const fetchRandomHealthTip = async () => {
       try {
-        const response = await axios.get(
-          "https://type.fit/api/quotes" 
-        );
+        const response = await axios.get("https://type.fit/api/quotes");
         const healthTips = response.data;
         const randomIndex = Math.floor(Math.random() * healthTips.length);
         const randomHealthTip = healthTips[randomIndex];
@@ -101,7 +99,7 @@ const Home = () => {
         <View style={{ alignSelf: "center", margin: 5 }}>
           <Progress.Circle
             size={50}
-            progress={data.status / 100}
+            progress={data.status / 100} 
             showsText={true}
             unfilledColor="#ededed"
             borderColor="#ededed"
@@ -119,7 +117,7 @@ const Home = () => {
             textStyle={{
               fontSize: 14,
               fontWeight: "bold",
-              color: data.darkColor, // add a color property here
+              color: data.darkColor,
             }}
           />
         </View>
@@ -267,7 +265,7 @@ const Home = () => {
                   color: "#333",
                 }}
               >
-               {healthTip.author}
+                {healthTip.author}
               </Text>
               <Text style={{ flex: 1 }}>{healthTip.text}</Text>
             </View>

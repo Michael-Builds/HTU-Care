@@ -82,7 +82,7 @@ const Update = () => {
       if (newPassword) payload.password = newPassword;
 
       // Send the update profile request with the obtained user ID
-      await axios.put(`http://192.168.43.237:4000/users/${userId}`, payload);
+      await axios.put(`http://localhost:4000/users/${userId}`, payload);
 
       Alert.alert("Success", "Your profile has been updated.");
       navigation.navigate("Homes");

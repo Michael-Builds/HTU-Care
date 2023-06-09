@@ -24,7 +24,7 @@ const CustomDrawerContent = (props) => {
   useEffect(() => {
     async function fetchData() {
       const token = await AsyncStorage.getItem("token");
-      const response = await fetch("http://192.168.43.237:4000/", {
+      const response = await fetch("http://localhost:4000/", {
         headers: new Headers({
           Authorization: "Bearer " + token,
         }),

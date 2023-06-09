@@ -80,7 +80,7 @@ const SignUp = () => {
       return;
     }
     setLoading(true);
-    fetch("http://192.168.43.237:4000/signup", {
+    fetch("http://localhost:4000/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -24,7 +24,6 @@ const ForgotPassword = () => {
   const handleReset = ()=>{
     navigation.navigate("")
   }
-
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#e8ecf4" }}>
@@ -100,7 +99,7 @@ const ForgotPassword = () => {
           <View style={styles.formAction}>
             <TouchableOpacity
               onPress={() => {
-                handleSubmit();
+                handleReset();
               }}
             >
               <View style={styles.btn}>

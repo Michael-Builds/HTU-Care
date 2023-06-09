@@ -46,7 +46,7 @@ const Login = () => {
       return;
     }
     setLoading(true);
-    fetch("http://192.168.43.237:4000/login", {
+    fetch("http://localhost:4000/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
