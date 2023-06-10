@@ -6,7 +6,6 @@ import {
   StatusBar,
   ImageBackground,
   Image,
-  ScrollView,
 } from "react-native";
 import * as Progress from "react-native-progress";
 import CustomDrawer from "../navigators/CustomDrawer";
@@ -49,24 +48,24 @@ const Home = () => {
   // Data variables
   const data = [
     {
-      name: "Cycling",
-      status: 45,
+      name: "Lufart",
+      status: 12,
       image: cycle,
       lightColor: "#f8e4d9",
       color: "#fcf1ea",
       darkColor: "#fac5a4",
     },
     {
-      name: "Walking",
-      status: 82,
+      name: "Gebedol",
+      status: 52,
       image: walk,
       lightColor: "#d7f0f7",
       color: "#e8f7fc",
       darkColor: "#aceafc",
     },
     {
-      name: "Yoga",
-      status: 60,
+      name: "Citro-C",
+      status: 79,
       image: yoga,
       lightColor: "#dad5fe",
       color: "#e7e3ff",
@@ -77,6 +76,7 @@ const Home = () => {
   // Card for displaying activities
   const Card = ({ data, index }) => {
     return (
+
       <View
         style={{
           flex: 1,
@@ -156,7 +156,7 @@ const Home = () => {
   };
 
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <StatusBar
         hidden={false}
         backgroundColor="#191970"
@@ -209,7 +209,7 @@ const Home = () => {
             marginLeft: 10,
           }}
         >
-          Your Activities
+          Your Prescriptions
         </Text>
         <View style={{ flexDirection: "row" }}>
           {data.map((item, index) => (
@@ -279,8 +279,9 @@ const Home = () => {
             </View>
           </View>
         </View>
+
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
