@@ -18,13 +18,13 @@ const requireToken = require("./middleware/requireToken");
 const authRoutes = require("./routes/authRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const healthRecordsRouter = require("./routes/healthRecords");
-
+const prescriptionRoutes = require("./routes/prescriptionRoutes");
 
 app.use(bodyParser.json());
 app.use(authRoutes);
 app.use(appointmentRoutes);
-app.use( healthRecordsRouter);
-
+app.use(healthRecordsRouter);
+app.use(prescriptionRoutes);
 
 //Pull request
 app.get("/", requireToken, (req, res) => {
@@ -45,11 +45,9 @@ mongoose
     console.error(`Error Connecting to Database: ${error.message}`.bgRed.white)
   );
 
-
 // Middlewares
 app.use(express.json());
 app.use(morgan("dev"));
-
 
 //Port callback
 const port = process.env.PORT;
