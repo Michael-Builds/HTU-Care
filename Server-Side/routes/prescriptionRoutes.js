@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Prescription = require("../models/Prescription");
 
-
 // Endpoint for saving prescription data
 router.post("/prescriptions", async (req, res) => {
   try {
@@ -20,6 +19,9 @@ router.post("/prescriptions", async (req, res) => {
       additionalnotes,
     } = req.body;
 
+    // Get the current time
+    const prescriptionTime = new Date();
+
     // Input validation
     if (
       !fullName ||
@@ -31,7 +33,8 @@ router.post("/prescriptions", async (req, res) => {
       !prescriptiondate ||
       !durationDays ||
       !timeinterval ||
-      !timesPerDay
+      !timesPerDay ||
+      !additionalnotes
     ) {
       return res.status(400).json({ error: "All fields are required." });
     }
@@ -53,6 +56,9 @@ router.post("/prescriptions", async (req, res) => {
         .json({ error: "Invalid age. Age must be a positive number." });
     }
 
+    //Convert the date string to a Date Object
+    const formattedDate = new Date(prescriptiondate);
+
     // Create a new instance of the Prescription model
     const prescription = new Prescription({
       fullName,
@@ -61,17 +67,37 @@ router.post("/prescriptions", async (req, res) => {
       address,
       doctorName,
       drugname,
-      prescriptiondate,
+      prescriptiondate: formattedDate,
       durationDays,
       timeinterval,
       timesPerDay,
       additionalnotes,
+      prescriptionTime,
     });
 
     // Save the prescription to the database
-    const savedPrescription = await prescription.save();
+    await prescription.save();
 
-    res.status(201).json(savedPrescription);
+    //Format the prescription summary for thr user
+
+    const prescriptionSummary = `Prescription Destails:
+      Patient: ${fullName}
+      Age: ${patientAge}
+      Contact: ${contact}
+      Address: ${address}
+      Doctor: ${doctorName}
+      Drug Name: ${drugname}
+      Prescription Date: ${formattedDate.toLocaleDateString()}
+      Duration: ${durationDays}
+      Time Interval: ${timeinterval}
+      Times Per Day: ${timesPerDay}
+      Additional Notes: ${additionalnotes}
+      `;
+
+    res.status(201).json({
+      message: "Prescription uploaded Successfully",
+      prescription: prescriptionSummary,
+    });
   } catch (error) {
     console.error(error);
     res

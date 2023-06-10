@@ -29,10 +29,8 @@ const Login = () => {
     navigation.navigate("Signup");
   };
 
-  
-
   handleSubmit = () => {
-    //Email Validity
+    // Email Validity
     const isEmailValid = (email) => {
       const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
       return emailRegex.test(email);
@@ -47,7 +45,9 @@ const Login = () => {
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
+
     setLoading(true);
+
     fetch("http://192.168.43.237:4000/login", {
       method: "POST",
       headers: {
@@ -58,7 +58,15 @@ const Login = () => {
         password: password,
       }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else if (res.status === 422) {
+          throw new Error("User with that email does not exist.");
+        } else {
+          throw new Error("Login failed. Please try again.");
+        }
+      })
       .then(async (data) => {
         try {
           await AsyncStorage.setItem("token", data.token);
@@ -72,6 +80,7 @@ const Login = () => {
                 headers: { Authorization: `Bearer ${data.token}` },
               }
             );
+
             const { role } = response.data;
 
             if (role === "admin") {
@@ -93,15 +102,8 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        console.log("Error parsing response", error);
-        if (error.message === "Network request failed") {
-          Alert.alert(
-            "Network Error",
-            "Please check your internet connection and try again."
-          );
-        } else {
-          Alert.alert("Error", "Something went wrong. Please try again.");
-        }
+        console.log("Error logging in", error);
+        Alert.alert("Error", error.message);
         setLoading(false);
       });
   };

@@ -16,7 +16,6 @@ import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
 const SignUp = () => {
   const navigation = useNavigation();
 
@@ -179,7 +178,6 @@ const SignUp = () => {
                   placeholder="Enter Password"
                   placeholderTextColor="#6b7280"
                   secureTextEntry={!showPassword}
-                  // theme = {{colors: {primary: '#191970'}}}
                 />
 
                 <View style={{ position: "absolute", right: 8 }}>
