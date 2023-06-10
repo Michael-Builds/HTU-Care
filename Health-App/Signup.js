@@ -38,6 +38,7 @@ const SignUp = () => {
 
   // Handling the Signup Logic and it's authentications
   handleSubmit = () => {
+    
     // Password validation logic
     if (password.length < 8) {
       Alert.alert(
@@ -160,7 +161,6 @@ const SignUp = () => {
                 placeholderTextColor="#6b7280"
                 style={styles.inputControl}
                 value={email}
-                // theme = {{colors: {primary: '#191970'}}}
               />
             </View>
 

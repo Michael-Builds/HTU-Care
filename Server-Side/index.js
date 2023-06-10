@@ -11,7 +11,6 @@ const app = express();
 // dotenv config
 dotenv.config();
 
-
 //modeling the user data
 require("./models/User");
 
