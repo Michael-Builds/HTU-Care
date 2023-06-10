@@ -11,6 +11,8 @@ const app = express();
 // dotenv config
 dotenv.config();
 
+//will be adding some features of the middleware here
+
 //modeling the user data
 require("./models/User");
 
