@@ -12,6 +12,7 @@ import BottomTabNavigator from "./BottomTabNavigator";
 import HealthRecords from "../screens/HealthRecords";
 import ViewRecords from "../screens/ViewRecords";
 import PasswordUpdate from "../screens/Update";
+import Prescription from '../screens/Prescription';
 import Settings from '../screens/Settings'
 import Logout from "../screens/Logout";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -250,7 +251,7 @@ const CustomDrawerContent = (props) => {
             marginLeft: 10,
             alignItems: "center",
           }}
-          onPress={() => props.navigation.navigate("Settings")}
+          onPress={() => props.navigation.navigate("Prescription")}
         >
           <Image
             style={{
@@ -349,11 +350,11 @@ const SideDrawer = () => {
         name="PasswordUpdate"
         component={PasswordUpdate}
         options={{ headerShown: false }}
-      />
-      
+      />   
+      {/* settings changed to prescription */}
       <Drawer.Screen
-        name="Settings"
-        component={Settings}
+        name="Prescription"
+        component={Prescription}
         options={{ headerShown: false }}
       />
 

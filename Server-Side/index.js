@@ -18,13 +18,13 @@ const requireToken = require("./middleware/requireToken");
 const authRoutes = require("./routes/authRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const healthRecordsRouter = require("./routes/healthRecords");
-const prescriptionRoutes = require("./routes/prescriptionRoutes");
+const prescriptionRouter = require("./routes/prescriptionRoutes");
 
 app.use(bodyParser.json());
 app.use(authRoutes);
 app.use(appointmentRoutes);
 app.use(healthRecordsRouter);
-app.use(prescriptionRoutes);
+app.use(prescriptionRouter);
 
 //Pull request
 app.get("/", requireToken, (req, res) => {
