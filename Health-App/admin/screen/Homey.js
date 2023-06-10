@@ -4,16 +4,16 @@ import {
   Text,
   StyleSheet,
   StatusBar,
-  SafeAreaView,
-  TouchableOpacity,
+  ImageBackground,
+  Image,
   ActivityIndicator,
 } from "react-native";
+import * as Progress from "react-native-progress";
 import CustomDrawer from "../nav/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
-import walk from "../../assets/images/walk.png";
-import yoga from "../../assets/images/yoga.png";
-import cycle from "../../assets/images/cycle.png";
-import next from "../../assets/images/next.png";
+import doctor from "../../assets/images/doctors.png";
+import finance from "../../assets/images/finance.png";
+import user from "../../assets/images/users.png";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -22,34 +22,31 @@ const Home = () => {
   const [doctorCount, setDoctorCount] = useState(0);
   const [users, setUsers] = useState([]);
   const [doctors, setDoctors] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
 
-  const HomeDetails = () => {
-    navigation.navigate("HomeyDetails");
-  };
-
-  // Data variables
   const data = [
     {
-      name: "Lufart",
-      status: 12,
-      image: cycle,
+      name: "Users",
+      status: userCount,
+      image: user,
+      active: "Active",
       lightColor: "#f8e4d9",
       color: "#fcf1ea",
       darkColor: "#fac5a4",
     },
     {
-      name: "Gebedol",
-      status: 52,
-      image: walk,
+      name: "Doctors",
+      status: doctorCount,
+      image: doctor,
+      active: "Active",
       lightColor: "#d7f0f7",
       color: "#e8f7fc",
       darkColor: "#aceafc",
     },
     {
-      name: "Citro-C",
-      status: 79,
-      image: yoga,
+      name: "Finances",
+      status: 0,
+      image: finance,
+      active: "Active",
       lightColor: "#dad5fe",
       color: "#e7e3ff",
       darkColor: "#8860a2",
@@ -71,18 +68,7 @@ const Home = () => {
         setLoading(false);
       });
   }, []);
-
-  if (loading) {
-    return (
-      <View>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-  //   <View style={styles.container}>
-  //   <Text>Welcome to Home Screen!!</Text>
-  //   <Text>Total Users: {userCount}</Text>
-  //   <Text>Total Doctors: {doctorCount}</Text>
+  
 
   //   <View style={styles.userList}>
   //     <Text>User List:</Text>
@@ -103,11 +89,6 @@ const Home = () => {
   //       </View>
   //     ))}
   //   </View>
-
-  //   <TouchableOpacity style={{ marginTop: 20 }} onPress={HomeDetails}>
-  //     <Text>Go to Home Details!!</Text>
-  //   </TouchableOpacity>
-  // </View>
 
   // Card for displaying activities
   const Card = ({ data, index }) => {
@@ -136,6 +117,7 @@ const Home = () => {
             size={50}
             progress={data.status / 100}
             showsText={true}
+            formatText={() => `${data.status}`}
             unfilledColor="#ededed"
             borderColor="#ededed"
             color={data.darkColor}
@@ -156,35 +138,30 @@ const Home = () => {
             }}
           />
         </View>
-        <View>
-          <Text style={{ fontSize: 10 }}> {"Day     3"} </Text>
-          <Text style={{ fontSize: 10 }}>{"Time   20 min"}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center",justifyContent: "center" }}>
+          <View
+            style={{
+              width: 5,
+              height: 5,
+              borderRadius: 4,
+              backgroundColor: "green",
+              marginRight: 5,
+            }}
+          />
+          <Text style={{ fontSize: 10, textAlign: "center" }}>
+            {data.active}
+          </Text>
         </View>
 
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-between",
+            justifyContent: "center",
             alignItems: "center",
+            marginBottom: 5,
           }}
         >
-          <Text>{data.name}</Text>
-          <View
-            style={{
-              backgroundColor: data.lightColor,
-              padding: 2,
-              borderRadius: 10,
-            }}
-          >
-            <Image
-              source={next}
-              style={{
-                height: 12,
-                width: 12,
-                resizeMode: "contain",
-              }}
-            />
-          </View>
+          <Text style ={{ fontWeight: "bold"}}>{data.name}</Text>
         </View>
       </View>
     );
@@ -197,7 +174,7 @@ const Home = () => {
         backgroundColor="#191970"
         barStyle="light-content"
       />
-      <CustomDrawer title="Home" isHome={true} navigation={navigation} />
+      <CustomDrawer isHome={true} navigation={navigation} />
 
       {/* Banner images and container */}
 
@@ -216,19 +193,19 @@ const Home = () => {
             <View style={styles.rowLabel}>
               <View style={styles.fireContainer}>
                 <Image
-                  source={require("../../assets/images/fire.png")}
+                  source={require("../../assets/images/analysis.png")}
                   resizeMode="contain"
                   style={styles.fireImage}
                 />
               </View>
-              <Text style={styles.offer}>limited offer</Text>
+              <Text style={styles.offer}>Analytical tool</Text>
             </View>
-            <Text style={styles.offerText}>30% Discount</Text>
-            <Text style={styles.offerText}>Flash Sales</Text>
+            <Text style={styles.offerTexts}>Daily Accounts</Text>
+            <Text style={styles.offerText}>Hospital's Management</Text>
           </View>
         </ImageBackground>
         <Image
-          source={require("../../assets/images/nurse.png")}
+          source={require("../../assets/images/admin2.png")}
           style={styles.model}
           resizeMode="contain"
         />
@@ -244,7 +221,7 @@ const Home = () => {
             marginLeft: 10,
           }}
         >
-          Your Prescriptions
+          Your Analysis
         </Text>
         <View style={{ flexDirection: "row" }}>
           {data.map((item, index) => (
@@ -279,30 +256,40 @@ const styles = StyleSheet.create({
   },
   fireContainer: {
     justifyContent: "center",
+    marginLeft: -20,
     alignItems: "center",
   },
   fireImage: {
     height: 15,
-    width: 15,
+    width: 20,
     alignSelf: "center",
     margin: 5,
   },
   offer: {
     color: "white",
-    fontSize: 10,
+    fontSize: 12,
   },
   offerText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 14,
+    marginLeft: -5,
+    marginBottom: 5,
+    marginTop: 5,
+  },
+  offerTexts: {
+    color: "white",
+    fontSize: 14,
+    marginLeft: -5,
+    marginTop: 5,
   },
   model: {
     position: "absolute",
-    right: 14,
+    right: 15,
     bottom: 0,
     zIndex: 10,
-    height: "100%",
+    height: "110%",
     width: "50%",
-    top: "13%",
+    top: "10%",
   },
 });
 

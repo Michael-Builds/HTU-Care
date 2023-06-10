@@ -24,7 +24,7 @@ const CustomDrawerContent = (props) => {
   useEffect(() => {
     async function fetchData() {
       const token = await AsyncStorage.getItem("token");
-      const response = await fetch("http://localhost:4000/", {
+      const response = await fetch("http://192.168.43.237:4000/", {
         headers: new Headers({
           Authorization: "Bearer " + token,
         }),
@@ -100,7 +100,7 @@ const CustomDrawerContent = (props) => {
               justifyContent: "center",
               fontSize: 13,
               fontWeight: "normal",
-              marginBottom: 10,
+              marginBottom: 20,
               textAlign: "center",
               color: "#9CA3AF",
             }}
@@ -114,17 +114,17 @@ const CustomDrawerContent = (props) => {
           style={{
             marginTop: 25,
             flexDirection: "row",
-            marginBottom: 15,
-            marginLeft: 20,
+            marginBottom: 20,
+            marginLeft: 10,
             alignItems: "center",
           }}
           onPress={() => props.navigation.navigate("Menu")}
         >
           <Image
             style={{
-              width: 40,
-              height: 40,
-              marginLeft: 20,
+              width: 30,
+              height: 30,
+              marginLeft: 15,
             }}
             source={require("../../assets/images/Dashboard.png")}
             resizeMode="contain"
@@ -132,7 +132,7 @@ const CustomDrawerContent = (props) => {
           <Text
             style={{
               marginLeft: 20,
-              fontSize: 17,
+              fontSize: 16,
               color: "#333",
               fontWeight: "bold",
             }}
@@ -146,17 +146,17 @@ const CustomDrawerContent = (props) => {
           style={{
             marginTop: 10,
             flexDirection: "row",
-            marginBottom: 15,
-            marginLeft: 20,
+            marginBottom: 20,
+            marginLeft: 10,
             alignItems: "center",
           }}
           onPress={() => props.navigation.navigate("ProfileUpdate")}
         >
           <Image
             style={{
-              width: 35,
-              height: 35,
-              marginLeft: 20,
+              width: 30,
+              height: 30,
+              marginLeft: 15,
             }}
             source={require("../../assets/images/update.png")}
             resizeMode="contain"
@@ -164,7 +164,7 @@ const CustomDrawerContent = (props) => {
           <Text
             style={{
               marginLeft: 20,
-              fontSize: 17,
+              fontSize: 16,
               color: "#333",
               fontWeight: "bold",
             }}
@@ -179,8 +179,8 @@ const CustomDrawerContent = (props) => {
       <TouchableOpacity
         style={{
           flexDirection: "row",
-          marginBottom: 90,
-          marginLeft: 20,
+          marginBottom: 100,
+          marginLeft: 10,
           alignItems: "center",
         }}
         onPress={() => {
@@ -204,14 +204,14 @@ const CustomDrawerContent = (props) => {
         }}
       >
         <Image
-          style={{ width: 40, height: 40, marginLeft: 25 }}
+          style={{ width: 35, height: 35, marginLeft: 20 }}
           source={require("../../assets/images/logout.png")}
           resizeMode="contain"
         />
         <Text
           style={{
             marginLeft: 20,
-            fontSize: 17,
+            fontSize: 16,
             color: "#333",
             fontWeight: "bold",
           }}
