@@ -19,6 +19,8 @@ import axios from "axios";
 const Home = () => {
   const navigation = useNavigation();
 
+  //Prescription Tracking function here
+
   // Health tip state
   const [healthTip, setHealthTip] = useState({ text: "", author: "" });
 
