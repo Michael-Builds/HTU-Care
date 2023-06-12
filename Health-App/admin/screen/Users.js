@@ -50,7 +50,6 @@ const Users = () => {
       setFilteredUsers([]);
     }
   };
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}

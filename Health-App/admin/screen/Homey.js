@@ -6,7 +6,6 @@ import {
   StatusBar,
   ImageBackground,
   Image,
-  ActivityIndicator,
 } from "react-native";
 import * as Progress from "react-native-progress";
 import CustomDrawer from "../nav/CustomDrawer";
@@ -125,13 +124,13 @@ const Home = () => {
               borderRadius: 4,
               backgroundColor: "green",
               marginRight: 5,
+              marginTop: -5,
             }}
           />
           <Text style={{ fontSize: 10, textAlign: "center" }}>
             {data.active}
           </Text>
         </View>
-
         <View
           style={{
             flexDirection: "row",

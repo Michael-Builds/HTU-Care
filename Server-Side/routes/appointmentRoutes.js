@@ -73,6 +73,8 @@ router.post("/appointments", async (req, res) => {
   }
 });
 
+//will be accepting responses from appointments booked by th patients and then reply from the doctors
+
 // Endpoint to get the count of appointments
 router.get("/appointments/count", async (req, res) => {
   try {

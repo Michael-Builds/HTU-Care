@@ -36,77 +36,80 @@ const SignUp = () => {
     return emailRegex.test(email);
   };
 
-  // Handling the Signup Logic and it's authentications
-  handleSubmit = () => {
-    
-    // Password validation logic
-    if (password.length < 8) {
-      Alert.alert(
-        "Invalid Password",
-        "Password must be at least 8 characters long"
-      );
-      return;
-    }
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumbers = /\d/.test(password);
-    const hasNonAlphas = /\W/.test(password);
+  // Handling the Signup Logic and its authentications
+handleSubmit = () => {
+  // Password validation logic
+  if (password.length < 8) {
+    Alert.alert(
+      "Invalid Password",
+      "Password must be at least 8 characters long"
+    );
+    return;
+  }
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+  const hasNonAlphas = /\W/.test(password);
 
-    if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasNonAlphas) {
-      Alert.alert(
-        "Weak Password",
-        "Password must contain at least one uppercase letter, one lowercase letter, one number and one non-alphabetic character"
-      );
-      return;
-    }
+  if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasNonAlphas) {
+    Alert.alert(
+      "Weak Password",
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one non-alphabetic character"
+    );
+    return;
+  }
 
-    if (!isEmailValid(email)) {
-      Alert.alert("Invalid Email", "Please enter a valid email address");
-      return;
-    }
+  if (!isEmailValid(email)) {
+    Alert.alert("Invalid Email", "Please enter a valid email address");
+    return;
+  }
 
-    if (!username || !email || !password) {
-      Alert.alert("Error", "Please fill all the fields");
-      return;
-    }
-    setLoading(true);
-    fetch("http://192.168.43.237:4000/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
-        email: email,
-        password: password,
-      }),
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        try {
-          await AsyncStorage.setItem("token", data.token);
-          Alert.alert("Success", "Account created Successfully!");
-          navigation.navigate("SideDrawer");
-        } catch (e) {
-          console.log("Error Creating Account", e);
-          Alert.alert("Error", "Something went wrong. Please try again.");
-        } finally {
-          setLoading(false);
-        }
-      })
-      .catch((error) => {
-        console.log("Error parsing response", error);
-        if (error.message === "Network request failed") {
-          Alert.alert(
-            "Network Error",
-            "Please check your internet connection and try again."
-          );
-        } else if (error.response && error.response.status === 422) {
-          Alert.alert("Error", "User already exists");
-        }
+  if (!username || !email || !password) {
+    Alert.alert("Error", "Please fill all the fields");
+    return;
+  }
+
+  setLoading(true);
+
+  fetch("http://192.168.43.237:4000/signup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: username,
+      email: email,
+      password: password,
+    }),
+  })
+    .then((res) => res.json())
+    .then(async (data) => {
+      try {
+        await AsyncStorage.setItem("token", data.token);
+        Alert.alert("Success", "Account created successfully!");
+        navigation.navigate("SideDrawer");
+      } catch (e) {
+        console.log("Error Creating Account", e);
+        Alert.alert("Error", "Something went wrong. Please try again.");
+      } finally {
         setLoading(false);
-      });
-  };
+      }
+    })
+    .catch((error) => {
+      console.log("Error parsing response", error);
+      if (error.message === "Network request failed") {
+        Alert.alert(
+          "Network Error",
+          "Please check your internet connection and try again."
+        );
+      } else if (error.message === "User already exists") {
+        Alert.alert("Error", "User already exists");
+      } else {
+        Alert.alert("Error", "Failed to create account. Please try again.");
+      }
+      setLoading(false);
+    });
+};
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#e8ecf4" }}>

@@ -1,50 +1,78 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   StatusBar,
-  SafeAreaView,
-  TouchableOpacity,
+  Image,
+  ImageBackground,
 } from "react-native";
 import CustomDrawer from "../navigations/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
 import * as Progress from "react-native-progress";
-import walk from "../../assets/images/walk.png";
-import yoga from "../../assets/images/yoga.png";
-import cycle from "../../assets/images/cycle.png";
-import next from "../../assets/images/next.png";
-import axios from "axios";
+import user from "../../assets/images/users.png";
+import message from "../../assets/images/message.png";
+import appoint from "../../assets/images/appoint.png";
 
 const Home = () => {
   const navigation = useNavigation();
 
-  const HomeDetails = () => {
-    navigation.navigate("HomeDetails");
-  };
+  //useStates for catching our appointmentcounts and and usercounts
+  const [loading, setLoading] = useState(true);
+  const [userCount, setUserCount] = useState(0);
+  const [appointmentCount, setAppointmentCount] = useState(0);
 
+//useEffect for reading and displaying the current number of user's in our database
+  useEffect(() => {
+    fetch("http://192.168.43.237:4000/admin/dashboard")
+      .then((res) => res.json())
+      .then((data) => {
+        setUserCount(data.userCount);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log("Error fetching counts", error);
+        setLoading(false);
+      });
+  }, []);
+
+  //useEffect for reading and displaying the number of appointments submitted by patients in our database
+  useEffect(() => {
+    fetch("http://192.168.43.237:4000/appointments/count")
+      .then((response) => response.json())
+      .then((data) => {
+        setAppointmentCount(data.appointmentCount);
+      })
+      .catch((error) => {
+        console.error("Error fetching appointment count:", error);
+      });
+  }, []);
+  
   // Data variables
   const data = [
     {
-      name: "Lufart",
-      status: 12,
-      image: cycle,
+      name: "Appointments",
+      status: appointmentCount,
+      image: appoint,
+      active: "Recieved",
       lightColor: "#f8e4d9",
       color: "#fcf1ea",
       darkColor: "#fac5a4",
     },
     {
-      name: "Gebedol",
-      status: 52,
-      image: walk,
+      name: "Users",
+      status: userCount,
+      image: user,
+      active: "Active",
       lightColor: "#d7f0f7",
       color: "#e8f7fc",
       darkColor: "#aceafc",
     },
     {
-      name: "Citro-C",
-      status: 79,
-      image: yoga,
+      name: "Chats",
+      status: 12,
+      image: message,
+      active: "Made",
       lightColor: "#dad5fe",
       color: "#e7e3ff",
       darkColor: "#8860a2",
@@ -77,6 +105,7 @@ const Home = () => {
             size={50}
             progress={data.status / 100}
             showsText={true}
+            formatText={() => `${data.status}`}
             unfilledColor="#ededed"
             borderColor="#ededed"
             color={data.darkColor}
@@ -97,35 +126,50 @@ const Home = () => {
             }}
           />
         </View>
-        <View>
-          <Text style={{ fontSize: 10 }}> {"Day     3"} </Text>
-          <Text style={{ fontSize: 10 }}>{"Time   20 min"}</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <View
+            style={{
+              width: 5,
+              height: 5,
+              borderRadius: 4,
+              backgroundColor: "green",
+              marginRight: 5,
+              marginTop: -5,
+            }}
+          >
+            <Text style={{ fontSize: 10, textAlign: "center" }}>
+              {data.active}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: 5,
+            }}
+          >
+            <Text style={{ fontSize: 10, textAlign: "center" }}>
+              {data.active}
+            </Text>
+          </View>
         </View>
 
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-between",
+            justifyContent: "center",
             alignItems: "center",
+            marginBottom: 5,
           }}
         >
-          <Text>{data.name}</Text>
-          <View
-            style={{
-              backgroundColor: data.lightColor,
-              padding: 2,
-              borderRadius: 10,
-            }}
-          >
-            <Image
-              source={next}
-              style={{
-                height: 12,
-                width: 12,
-                resizeMode: "contain",
-              }}
-            />
-          </View>
+          <Text style={{ fontWeight: "bold", fontSize: 12 }}>{data.name}</Text>
         </View>
       </View>
     );
@@ -138,7 +182,7 @@ const Home = () => {
         backgroundColor="#191970"
         barStyle="light-content"
       />
-      <CustomDrawer title="Home" isHome={true} navigation={navigation} />
+      <CustomDrawer isHome={true} navigation={navigation} />
 
       {/* Banner images and container */}
 
@@ -157,24 +201,23 @@ const Home = () => {
             <View style={styles.rowLabel}>
               <View style={styles.fireContainer}>
                 <Image
-                  source={require("../../assets/images/fire.png")}
+                  source={require("../../assets/images/stet.png")}
                   resizeMode="contain"
                   style={styles.fireImage}
                 />
               </View>
-              <Text style={styles.offer}>limited offer</Text>
+              <Text style={styles.offer}>Analytical tool</Text>
             </View>
-            <Text style={styles.offerText}>30% Discount</Text>
-            <Text style={styles.offerText}>Flash Sales</Text>
+            <Text style={styles.offerTexts}>Daily Diagnoses</Text>
+            <Text style={styles.offerText}>Save a life today!</Text>
           </View>
         </ImageBackground>
         <Image
-          source={require("../../assets/images/nurse.png")}
+          source={require("../../assets/images/doc-pat.png")}
           style={styles.model}
           resizeMode="contain"
         />
       </View>
-
       {/* Activities Section */}
       <View style={{ marginHorizontal: "3%" }}>
         <Text
@@ -185,7 +228,7 @@ const Home = () => {
             marginLeft: 10,
           }}
         >
-          Your Prescriptions
+          Your Statistics
         </Text>
         <View style={{ flexDirection: "row" }}>
           {data.map((item, index) => (
@@ -220,20 +263,31 @@ const styles = StyleSheet.create({
   fireContainer: {
     justifyContent: "center",
     alignItems: "center",
+    marginLeft: -20,
   },
   fireImage: {
-    height: 15,
-    width: 15,
+    height: 20,
+    width: 45,
     alignSelf: "center",
     margin: 5,
   },
   offer: {
     color: "white",
-    fontSize: 10,
+    fontSize: 12,
+    marginLeft: -10,
   },
   offerText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 12,
+    marginLeft: -5,
+    marginBottom: 5,
+    marginTop: 5,
+  },
+  offerTexts: {
+    color: "white",
+    fontSize: 14,
+    marginLeft: -5,
+    marginTop: 5,
   },
   model: {
     position: "absolute",
