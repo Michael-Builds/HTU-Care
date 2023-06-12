@@ -4,6 +4,8 @@ const Appointment = require("../models/Appointment");
 const User = require("../models/User");
 const moment = require("moment");
 
+
+//Endpoint for uploading the appointments of a user into our database
 router.post("/appointments", async (req, res) => {
   try {
     const { email, fullName, date, time, condition } = req.body;
@@ -11,6 +13,7 @@ router.post("/appointments", async (req, res) => {
     // Find the user based on the email address
     const user = await User.findOne({ email });
 
+    //If user isn't found, return an error
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -73,7 +76,26 @@ router.post("/appointments", async (req, res) => {
   }
 });
 
-//will be accepting responses from appointments booked by th patients and then reply from the doctors
+
+// GET route for fetching appointment details for a specific user
+router.get("/appointments/user/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Find the appointments based on the user ID
+    const appointments = await Appointment.find({ user: userId });
+
+    if (appointments.length === 0) {
+      return res.status(404).json({ error: "No appointments found for the user" });
+    }
+
+    res.status(200).json({ appointments });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch appointment details" });
+  }
+});
+
 
 // Endpoint to get the count of appointments
 router.get("/appointments/count", async (req, res) => {

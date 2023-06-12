@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, View, Text } from "react-native";
 import HomeStack from "../components/HomeStack";
@@ -23,8 +23,7 @@ const BottomTabNavigator = () => {
         headerShown: false,
         tabBarStyle: {
           display: "flex",
-          // borderTopLeftRadius: 20,
-          // borderTopRightRadius: 20, // add this line
+
         },
         tabBarActiveTintColor: "#191970",
         tabBarInactiveTintColor: "grey",
@@ -39,13 +38,21 @@ const BottomTabNavigator = () => {
             iconName = focused ? "calendar" : "calendar-outline";
           } else if (rn === message) {
             iconName = focused ? "chatbubble" : "chatbubble-ellipses-outline";
+            return (
+              <View>
+                <Ionicons name={iconName} size={size} color={color} />
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.notificationBadgeText}>1</Text>
+                </View>
+              </View>
+            );
           } else if (rn === notification) {
             iconName = focused ? "notifications" : "notifications-outline";
             return (
               <View>
                 <Ionicons name={iconName} size={size} color={color} />
                 <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationBadgeText}>3</Text>
+                  <Text style={styles.notificationBadgeText}>5</Text>
                 </View>
               </View>
             );

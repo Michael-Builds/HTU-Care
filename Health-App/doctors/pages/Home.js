@@ -17,37 +17,36 @@ import appoint from "../../assets/images/appoint.png";
 const Home = () => {
   const navigation = useNavigation();
 
-  //useStates for catching our appointmentcounts and and usercounts
+  //useStates for catching our appointment counts and and usercounts
   const [loading, setLoading] = useState(true);
   const [userCount, setUserCount] = useState(0);
   const [appointmentCount, setAppointmentCount] = useState(0);
 
-//useEffect for reading and displaying the current number of user's in our database
-  useEffect(() => {
-    fetch("http://192.168.43.237:4000/admin/dashboard")
-      .then((res) => res.json())
-      .then((data) => {
-        setUserCount(data.userCount);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.log("Error fetching counts", error);
-        setLoading(false);
-      });
-  }, []);
-
-  //useEffect for reading and displaying the number of appointments submitted by patients in our database
-  useEffect(() => {
-    fetch("http://192.168.43.237:4000/appointments/count")
-      .then((response) => response.json())
-      .then((data) => {
-        setAppointmentCount(data.appointmentCount);
-      })
-      .catch((error) => {
-        console.error("Error fetching appointment count:", error);
-      });
-  }, []);
+//useEffect for reading and displaying the current number of user's and appointments count in our database
+useEffect(() => {
+  fetch("http://192.168.43.237:4000/admin/dashboard")
+    .then((res) => res.json())
+    .then((data) => {
+      setUserCount(data.userCount);
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.log("Error fetching counts", error);
+      setLoading(false);
+    });
+}, []);
   
+useEffect(() => {
+  fetch("http://192.168.43.237:4000/appointments/count")
+    .then((response) => response.json())
+    .then((data) => {
+      setAppointmentCount(data.count);
+    })
+    .catch((error) => {
+      console.error("Error fetching appointment count:", error);
+    });
+}, []);
+
   // Data variables
   const data = [
     {
