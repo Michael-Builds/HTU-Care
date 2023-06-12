@@ -69,27 +69,6 @@ const Home = () => {
       });
   }, []);
   
-
-  //   <View style={styles.userList}>
-  //     <Text>User List:</Text>
-  //     {users.map((user) => (
-  //       <View key={user._id}>
-  //         <Text>Username: {user.username}</Text>
-  //         <Text>Email: {user.email}</Text>
-  //       </View>
-  //     ))}
-  //   </View>
-
-  //   <View style={styles.doctorList}>
-  //     <Text>Doctor List:</Text>
-  //     {doctors.map((doctor) => (
-  //       <View key={doctor._id}>
-  //         <Text>Username: {doctor.username}</Text>
-  //         <Text>Email: {doctor.email}</Text>
-  //       </View>
-  //     ))}
-  //   </View>
-
   // Card for displaying activities
   const Card = ({ data, index }) => {
     return (

@@ -68,10 +68,10 @@ const Users = () => {
           <Image
             resizeMode="contain"
             style={styles.headerImg}
-            source={require("../../assets/images/card2.jpeg")}
+            source={require("../../assets/images/pat.jpg")}
           />
           <Text style={styles.title}>
-            User <Text style={{ color: "#075eec" }}>Details</Text>
+            Patient's <Text style={{ color: "#075eec" }}>Details</Text>
           </Text>
           <Text style={styles.subtitle}>
             Get access to your portfolio and more
@@ -99,7 +99,9 @@ const Users = () => {
             <View>
               {filteredUsers.length === 0 ? (
                 error ? (
-                  <Text>No user found with the entered username.</Text>
+                  <Text style={{ color: "red", textAlign: "center" }}>
+                    No user found with the entered username
+                  </Text>
                 ) : (
                   users.map((user) => (
                     <View key={user._id} style={styles.card}>
@@ -111,6 +113,24 @@ const Users = () => {
                         Username: {user.username}
                       </Text>
                       <Text style={styles.email}>Email: {user.email}</Text>
+
+                      <View style={styles.imagesContainer}>
+                        <View style={styles.imageWrapper}>
+                          <Image
+                            source={require("../../assets/images/calendar.png")}
+                            style={[
+                              styles.calendarImage,
+                              { tintColor: "gray" },
+                            ]}
+                          />
+                        </View>
+                        <View style={styles.imageWrapper}>
+                          <Image
+                            source={require("../../assets/images/clock.png")}
+                            style={[styles.clockImage, { tintColor: "gray" }]}
+                          />
+                        </View>
+                      </View>
                     </View>
                   ))
                 )
@@ -143,37 +163,40 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   header: {
-    marginVertical: 36,
-    marginTop: 15,
+    marginVertical: 35,
+    marginTop: 10,
   },
   headerImg: {
-    width: 140,
-    height: 130,
+    width: 120,
+    height: 110,
     alignSelf: "center",
-    marginBottom: 25,
-    borderRadius: 30,
+    marginBottom: 15,
+    borderRadius: 20,
+    resizeMode: "cover",
   },
   title: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
     color: "#1d1d1d",
     marginBottom: 8,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#333",
-    marginBottom: 20,
+    marginBottom: 15,
     textAlign: "center",
   },
   scrollView: {
     flex: 1,
-    width: "85%",
+    width: "80%",
+    marginTop: 20,
   },
   card: {
     backgroundColor: "#fff",
-    padding: 20,
-    marginBottom: 20,
+    padding: 15,
+    marginBottom: 15,
+    flexDirection: "column",
     borderRadius: 15,
     shadowColor: "#000",
     shadowOpacity: 0.2,
@@ -188,7 +211,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
+    marginTop: 5,
   },
   searchInput: {
     flex: 1,
@@ -205,7 +228,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   searchIconImage: {
-    width: 20,
+    width: 25,
     height: 20,
     resizeMode: "contain",
   },
@@ -214,15 +237,38 @@ const styles = StyleSheet.create({
     width: 45,
     height: 45,
     borderRadius: 50,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   username: {
     fontSize: 15,
     marginBottom: 8,
+    marginBottom: 4,
   },
   email: {
     fontSize: 14,
     color: "#333",
+    marginBottom: 12,
+  },
+  imagesContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 5,
+  },
+  imageWrapper: {
+    width: 30,
+    height: 30,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  calendarImage: {
+    width: 24,
+    height: 24,
+    marginRight: 5,
+  },
+  clockImage: {
+    width: 24,
+    height: 24,
+    marginLeft: 5,
   },
 });
 export default Users;
