@@ -4,13 +4,15 @@ import {
   SafeAreaView,
   Text,
   View,
+  TextInput,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import CustomDrawer from "../navigations/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from "react-native-vector-icons/FontAwesome";
 import moment from "moment";
 import axios from "axios";
 
@@ -19,8 +21,9 @@ const formatTime = (time) => {
 };
 
 const AppointmentDetailsCard = ({ details }) => {
-
   const [showDetails, setShowDetails] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
 
   const toggleDetails = () => {
     setShowDetails(!showDetails);
@@ -31,41 +34,83 @@ const AppointmentDetailsCard = ({ details }) => {
   };
 
   const handleReject = (id) => {
-    // handle reject logic here
+    setShowRejectModal(true);
+  };
+
+  const closeModal = () => {
+    setShowRejectModal(false);
   };
 
   return (
     <View style={styles.card}>
       <TouchableOpacity onPress={toggleDetails}>
         <View style={styles.header}>
-          <Icon style={styles.icon} name={showDetails ? 'chevron-up' : 'chevron-down'} size={20} color="#333" />
+          <Icon
+            style={styles.icon}
+            name={showDetails ? "chevron-up" : "chevron-down"}
+            size={20}
+            color="#333"
+          />
           <Text style={styles.title}>Reveal Details</Text>
         </View>
       </TouchableOpacity>
       {showDetails && (
         <View style={styles.detailsContainer}>
           <Text style={styles.titles}>Appointment Details {details.id}</Text>
+        <View style={styles.detailsContents}>
           <Text>Patient: {details.fullName}</Text>
           <Text>Email: {details.email}</Text>
           <Text>Date: {details.addedOn}</Text>
           <Text>Time: {formatTime(details.time)}</Text>
           <Text>Condition: {details.condition}</Text>
+          </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={() => handleAccept(details.id)}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handleAccept(details.id)}
+            >
               <Text style={styles.buttonText}>Accept</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => handleReject(details.id)}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handleReject(details.id)}
+            >
               <Text style={styles.buttonText}>Reject</Text>
             </TouchableOpacity>
           </View>
         </View>
       )}
+
+      <Modal visible={showRejectModal} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Enter Reason for Rejection:</Text>
+            <TextInput
+              style={styles.input}
+              value={rejectReason}
+              onChangeText={(text) => setRejectReason(text)}
+              placeholder="Reason"
+              multiline
+            />
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => handleReject(details.id)}
+              >
+                <Text style={styles.modalButtonText}>Reject</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
 const Appointment = () => {
-
   const navigation = useNavigation();
   const [appointments, setAppointments] = useState([]);
 
@@ -147,7 +192,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 5,
     justifyContent: "center",
   },
   icon: {
@@ -171,10 +216,15 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   detailsContainer: {
-    marginTop: 10,
+    marginTop: 5,
+    textAlign: "center",
+    marginBottom: 15,
+  },
+  detailsContents: {
+    marginLeft: 10,
   },
   card: {
-    backgroundColor: "#ADD8E6",
+    backgroundColor: "#cccfcf",
     padding: 20,
     marginBottom: 15,
     marginTop: 10,
@@ -191,18 +241,61 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 10,
+    marginTop: 15,
   },
   button: {
     backgroundColor: "#075eec",
-
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
-    width: "40%",
+    width: "35%",
   },
   buttonText: {
+    textTransform: "capitalize",
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    width: '80%',
+    borderRadius: 10,
+  },
+  input: {
+    height: 100,
+    backgroundColor: "#f2f2f2",
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 15,
+    textAlignVertical: "top",
+  },
+  
+  modalText: {
+    marginBottom: 30,
+    fontSize: 14,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  modalButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  modalButton: {
+    backgroundColor: "#075eec",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 5,
+    marginHorizontal: 10,
+  },
+  modalButtonText: {
     textTransform: "capitalize",
     color: "#fff",
     fontWeight: "600",

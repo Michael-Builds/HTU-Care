@@ -6,21 +6,25 @@ import {
   View,
   Image,
   Alert,
+  Modal,
 } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import BottomTabNavigator from "./BottomTabNavigator";
 import HealthRecords from "../screens/HealthRecords";
 import ViewRecords from "../screens/ViewRecords";
 import PasswordUpdate from "../screens/Update";
-import Prescription from '../screens/Prescription';
-import Settings from '../screens/Settings'
+import Prescription from "../screens/Prescription";
+import Settings from "../screens/Settings";
 import Logout from "../screens/Logout";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = (props) => {
+  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
   const [username, setUsername] = useState("Loading");
   const [email, setEmail] = useState("Loading");
 
@@ -42,10 +46,9 @@ const CustomDrawerContent = (props) => {
   }, []);
 
   //Logout Logic Here
-  const logout = async (props) => {
-    await AsyncStorage.removeItem("token").then(() => {
-      props.navigation.replace("Login");
-    });
+  const Signout = async (props) => {
+    await AsyncStorage.removeItem("token");
+    props.navigation.replace("Login");
   };
 
   return (
@@ -242,8 +245,8 @@ const CustomDrawerContent = (props) => {
           </Text>
         </TouchableOpacity>
 
-         {/* Settings Section */}
-         <TouchableOpacity
+        {/* Settings Section */}
+        <TouchableOpacity
           style={{
             marginTop: 10,
             flexDirection: "row",
@@ -273,7 +276,6 @@ const CustomDrawerContent = (props) => {
             Settings
           </Text>
         </TouchableOpacity>
-
       </ScrollView>
 
       {/* Logout Tab */}
@@ -285,23 +287,8 @@ const CustomDrawerContent = (props) => {
           alignItems: "center",
         }}
         onPress={() => {
-          Alert.alert(
-            "Logout",
-            "Are you sure you want to log out?",
-            [
-              {
-                text: "No",
-                style: "cancel",
-              },
-              {
-                text: "Yes",
-                onPress: () => {
-                  logout(props);
-                },
-              },
-            ],
-            { cancelable: false }
-          );
+          props.navigation.closeDrawer();
+          setModalVisible(true);
         }}
       >
         <Image
@@ -312,7 +299,7 @@ const CustomDrawerContent = (props) => {
         <Text
           style={{
             marginLeft: 20,
-            fontSize: 16,
+            fontSize: 17,
             color: "#333",
             fontWeight: "bold",
           }}
@@ -320,6 +307,63 @@ const CustomDrawerContent = (props) => {
           Logout
         </Text>
       </TouchableOpacity>
+      <Modal visible={modalVisible} animationType="fade" transparent>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#fff",
+              padding: 20,
+              borderRadius: 15,
+              width: "80%",
+            }}
+          >
+            <Text
+              style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}
+            >
+              Logout
+            </Text>
+            <Text style={{ marginBottom: 15 }}>
+              Are you sure you want to Logout?
+            </Text>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-around" }}
+            >
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "red",
+                  padding: 10,
+                  borderRadius: 5,
+                  width: "25%",
+                }}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={{ color: "#fff", textAlign: "center" }}>No</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "blue",
+                  padding: 10,
+                  borderRadius: 5,
+                  width: "25%",
+                }}
+                onPress={() => {
+                  setModalVisible(false);
+                  Signout(props);
+                }}
+              >
+                <Text style={{ color: "#fff", textAlign: "center" }}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -350,7 +394,7 @@ const SideDrawer = () => {
         name="PasswordUpdate"
         component={PasswordUpdate}
         options={{ headerShown: false }}
-      />   
+      />
       {/* settings changed to prescription */}
       <Drawer.Screen
         name="Prescription"
