@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   banner: {
-    marginTop: 20,
+    marginTop: 18,
     padding: 30,
     resizeMode: "contain",
     borderRadius: 20,

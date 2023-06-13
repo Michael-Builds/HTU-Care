@@ -19,8 +19,6 @@ import axios from "axios";
 const Home = () => {
   const navigation = useNavigation();
 
-  //Prescription Tracking function here
-
   // Health tip state
   const [healthTip, setHealthTip] = useState({ text: "", author: "" });
 
@@ -188,7 +186,7 @@ const Home = () => {
                   style={styles.fireImage}
                 />
               </View>
-              <Text style={styles.offer}>limited offer</Text>
+              <Text style={styles.offer}>Limited offer</Text>
             </View>
             <Text style={styles.offerText}>30% Discount</Text>
             <Text style={styles.offerText}>Flash Sales</Text>

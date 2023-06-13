@@ -71,6 +71,7 @@ userSchema.methods.updateProfile = function (
   const user = this;
   return new Promise(async (resolve, reject) => {
     try {
+      
       // Update email if provided
       if (email) {
         user.email = email;

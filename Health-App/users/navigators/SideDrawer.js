@@ -5,7 +5,6 @@ import {
   Text,
   View,
   Image,
-  Alert,
   Modal,
 } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -373,16 +372,19 @@ const SideDrawer = () => {
       drawerContent={(props) => CustomDrawerContent(props)}
       initialRouteName="Menu"
     >
+
       <Drawer.Screen
         name="Menu"
         component={BottomTabNavigator}
         options={{ headerShown: false }}
       />
+
       <Drawer.Screen
         name="HealthRecords"
         component={HealthRecords}
         options={{ headerShown: false }}
       />
+
       <Drawer.Screen
         name="ViewRecords"
         component={ViewRecords}
@@ -406,6 +408,7 @@ const SideDrawer = () => {
         component={Logout}
         options={{ headerShown: false }}
       />
+
     </Drawer.Navigator>
   );
 };
