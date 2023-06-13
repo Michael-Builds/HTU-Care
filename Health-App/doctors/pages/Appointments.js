@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StatusBar,
   SafeAreaView,
@@ -6,13 +6,11 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Button,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
 } from "react-native";
 import CustomDrawer from "../navigations/CustomDrawer";
-import BottomTab from "../navigations/BottomTab";
 import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from 'react-native-vector-icons/FontAwesome';
 import moment from "moment";
 import axios from "axios";
 
@@ -20,25 +18,31 @@ const formatTime = (time) => {
   return moment(time).format("h:mm A");
 };
 
-const AppointmentDetailsCard = ({ details, toggleDetails, opened }) => {
-  const handleToggle = () => {
-    toggleDetails(details._id);
+const AppointmentDetailsCard = ({ details }) => {
+
+  const [showDetails, setShowDetails] = useState(false);
+
+  const toggleDetails = () => {
+    setShowDetails(!showDetails);
+  };
+
+  const handleAccept = (id) => {
+    // handle accept logic here
+  };
+
+  const handleReject = (id) => {
+    // handle reject logic here
   };
 
   return (
     <View style={styles.card}>
-      <TouchableWithoutFeedback onPress={handleToggle}>
+      <TouchableOpacity onPress={toggleDetails}>
         <View style={styles.header}>
-          <Icon
-            style={styles.icon}
-            name={opened ? "chevron-up" : "chevron-down"}
-            size={20}
-            color="#333"
-          />
+          <Icon style={styles.icon} name={showDetails ? 'chevron-up' : 'chevron-down'} size={20} color="#333" />
           <Text style={styles.title}>Reveal Details</Text>
         </View>
-      </TouchableWithoutFeedback>
-      {opened && (
+      </TouchableOpacity>
+      {showDetails && (
         <View style={styles.detailsContainer}>
           <Text style={styles.titles}>Appointment Details {details.id}</Text>
           <Text>Patient: {details.fullName}</Text>
@@ -47,8 +51,12 @@ const AppointmentDetailsCard = ({ details, toggleDetails, opened }) => {
           <Text>Time: {formatTime(details.time)}</Text>
           <Text>Condition: {details.condition}</Text>
           <View style={styles.buttonContainer}>
-            <Button title="Accept" onPress={() => handleAccept(details.id)} />
-            <Button title="Reject" onPress={() => handleReject(details.id)} />
+            <TouchableOpacity style={styles.button} onPress={() => handleAccept(details.id)}>
+              <Text style={styles.buttonText}>Accept</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => handleReject(details.id)}>
+              <Text style={styles.buttonText}>Reject</Text>
+            </TouchableOpacity>
           </View>
         </View>
       )}
@@ -57,16 +65,9 @@ const AppointmentDetailsCard = ({ details, toggleDetails, opened }) => {
 };
 
 const Appointment = () => {
+
   const navigation = useNavigation();
-
   const [appointments, setAppointments] = useState([]);
-  const [openedAppointmentCount, setOpenedAppointmentCount] = useState(0);
-  const [openedAppointmentCards, setOpenedAppointmentCards] = useState({});
-
-  useEffect(() => {
-    const count = Object.values(openedAppointmentCards).filter(Boolean).length;
-    setOpenedAppointmentCount(count);
-  }, [openedAppointmentCards]);
 
   useEffect(() => {
     fetchAppointmentDetails();
@@ -100,17 +101,6 @@ const Appointment = () => {
     }); // Format the date as "Month, Day and Year" (e.g., January 21, 2023)
   };
 
-  const toggleDetails = (id) => {
-    setOpenedAppointmentCards((prevState) => ({
-      ...prevState,
-      [id]: !prevState[id],
-    }));
-
-    setOpenedAppointmentCount((prevCount) =>
-      openedAppointmentCards[id] ? prevCount - 1 : prevCount + 1
-    );
-  };
-
   const groupDetailsByDate = () => {
     const groupedDetails = {};
     appointments.forEach((details) => {
@@ -138,17 +128,11 @@ const Appointment = () => {
           <View key={date}>
             <Text style={styles.date}>{date}</Text>
             {details.map((detail) => (
-              <AppointmentDetailsCard
-                key={detail._id}
-                details={detail}
-                toggleDetails={toggleDetails}
-                opened={openedAppointmentCards[detail._id]}
-              />
+              <AppointmentDetailsCard key={detail._id} details={detail} />
             ))}
           </View>
         ))}
       </ScrollView>
-      <BottomTab openedAppointmentCount={openedAppointmentCount} />
     </SafeAreaView>
   );
 };
@@ -208,6 +192,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,
+  },
+  button: {
+    backgroundColor: "#075eec",
+
+    padding: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "40%",
+  },
+  buttonText: {
+    textTransform: "capitalize",
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
   },
 });
 

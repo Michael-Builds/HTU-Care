@@ -5,7 +5,6 @@ import HomeStack from "../stack/HomeStack";
 import AppointmentStack from "../stack/AppointmentStack";
 import MessageStack from "../stack/MessageStack";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import axios from "axios";
 
 const Tab = createBottomTabNavigator();
 
@@ -13,42 +12,34 @@ const home = "House";
 const appointments = "Appointments";
 const message = "Chat";
 
-const BottomTab = ({newAppointmentCount, setNewAppointmentCount}) => {
- 
-  useEffect(() => {
-    const fetchNewAppointmentCount = async () => {
-      try {
-        const response = await axios.get(
-          "http://192.168.43.237:4000/appointments/count"
-        );
-        const data = response.data;
-        const newlyBookedAppointmentCount = data.count;
-        setNewAppointmentCount(newlyBookedAppointmentCount);
-      } catch (error) {
-        console.error("Error fetching new appointment count:", error);
-      }
-    };
+const BottomTab = () => {
+  
+  //useState for checking for new Appointments being booked by students to the doctor
+  const [newAppointmentCount, setNewAppointmentCount] = useState(0);
 
+  //useEffect that handle the checking of newly booked appointments
+  useEffect(() => {
+    const fetchNewAppointmentCount = () => {
+      fetch("http://192.168.43.237:4000/appointments/count")
+        .then((response) => response.json())
+        .then((data) => {
+          const newlyBookedAppointmentCount = data.count;
+          setNewAppointmentCount(newlyBookedAppointmentCount);
+        })
+        .catch((error) => {
+          console.error("Error fetching new appointment count:", error);
+        });
+    };
+    // Fetch the initial count of new appointments
     fetchNewAppointmentCount();
 
-    const interval = setInterval(fetchNewAppointmentCount, 5 * 60 * 1000);
+    // Set up interval to fetch new appointment count periodically
+    const interval = setInterval(fetchNewAppointmentCount, 5 * 60 * 1000); // 5 minutes
+    // Clean up the interval when the component unmounts
     return () => {
       clearInterval(interval);
     };
   }, []);
-
-  const renderAppointmentBadge = () => {
-    if (newAppointmentCount > 0) {
-      return (
-        <View style={styles.notificationBadge}>
-          <Text style={styles.notificationBadgeText}>
-            {newAppointmentCount}
-          </Text>
-        </View>
-      );
-    }
-    return null;
-  };
 
   return (
     <Tab.Navigator
@@ -69,26 +60,35 @@ const BottomTab = ({newAppointmentCount, setNewAppointmentCount}) => {
             iconName = focused ? "home" : "home-outline";
           } else if (rn === appointments) {
             iconName = focused ? "calendar" : "calendar-outline";
+            return (
+              <View>
+                <Ionicons name={iconName} size={size} color={color} />
+                {newAppointmentCount > 0 && (
+                  <View style={styles.notificationBadge}>
+                    <Text style={styles.notificationBadgeText}>
+                      {newAppointmentCount}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            );
           } else if (rn === message) {
             iconName = focused ? "chatbubbles" : "chatbubbles-outline";
+            return (
+              <View>
+                <Ionicons name={iconName} size={size} color={color} />
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.notificationBadgeText}>0</Text>
+                </View>
+              </View>
+            );
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
     >
       <Tab.Screen name={home} component={HomeStack} />
-      <Tab.Screen
-        name={appointments}
-        component={AppointmentStack}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <View>
-              <Ionicons name="calendar" size={size} color={color} />
-              {renderAppointmentBadge()}
-            </View>
-          ),
-        }}
-      />
+      <Tab.Screen name={appointments} component={AppointmentStack} />
       <Tab.Screen name={message} component={MessageStack} />
     </Tab.Navigator>
   );
