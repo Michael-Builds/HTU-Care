@@ -337,7 +337,7 @@ const CustomDrawerContent = (props) => {
             >
               <TouchableOpacity
                 style={{
-                  backgroundColor: "red",
+                  backgroundColor: "blue",
                   padding: 10,
                   borderRadius: 5,
                   width: "25%",
@@ -348,7 +348,7 @@ const CustomDrawerContent = (props) => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={{
-                  backgroundColor: "blue",
+                  backgroundColor: "red",
                   padding: 10,
                   borderRadius: 5,
                   width: "25%",

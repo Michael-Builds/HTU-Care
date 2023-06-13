@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  image: {
+    data: Buffer,
+    contentType: String,
+  },
   role: {
     type: String,
     enum: ["user", "admin", "doctor"],
@@ -56,12 +60,13 @@ userSchema.methods.comparePassword = function (candidatePassword) {
   });
 };
 
-// Method to update email, password, and username
+// Method to update email, password, username, and image
 userSchema.methods.updateProfile = function (
   email,
   currentPassword,
   newPassword,
-  username
+  username,
+  image
 ) {
   const user = this;
   return new Promise(async (resolve, reject) => {
@@ -78,27 +83,15 @@ userSchema.methods.updateProfile = function (
 
       // Update password if both currentPassword and newPassword are provided
       if (currentPassword && newPassword) {
-        if (user.role === "doctor") {
-          // Handle update for doctor role
-          if (!user.isDoctorPasswordValid(currentPassword)) {
-            return reject(new Error("Invalid current password"));
-          }
-          user.password = newPassword;
-        } else if (user.role === "user") {
-          // Handle update for user role
-          if (!user.isUserPasswordValid(currentPassword)) {
-            return reject(new Error("Invalid current password"));
-          }
-          user.password = newPassword;
-        } else if (user.role === "admin") {
-          // Handle update for admin role
-          if (!user.isAdminPasswordValid(currentPassword)) {
-            return reject(new Error("Invalid current password"));
-          }
-          user.password = newPassword;
-        } else {
-          return reject(new Error("Invalid role"));
+        if (!user.isPasswordValid(currentPassword)) {
+          return reject(new Error("Invalid current password"));
         }
+        user.password = newPassword;
+      }
+
+      // Update image if provided
+      if (image) {
+        user.image = image;
       }
 
       await user.save();
@@ -109,57 +102,16 @@ userSchema.methods.updateProfile = function (
   });
 };
 
-// Method to validate password for doctor role
-userSchema.methods.isDoctorPasswordValid = function (password) {
- // Doctor's password must be at least 8 characters long
+// Method to validate password
+userSchema.methods.isPasswordValid = function (password) {
+  // Password validation logic
+
+
+  // Example validation: Password must be at least 8 characters long
   if (password.length < 8) {
     return false;
   }
 
-  return true;
-};
-
-// Method to validate password for doctor role
-userSchema.methods.isDoctorPasswordValid = function (password) {
-  
-  if (
-    password.length < 8 ||
-    !/[a-z]/.test(password) ||
-    !/[!@#$%^&*]/.test(password) ||
-    /doctor/i.test(password)
-  ) {
-    return false;
-  }
-  return true;
-};
-
-// Method to validate password for user role
-userSchema.methods.isUserPasswordValid = function (password) {
-  const username = this.username.toLowerCase();
-  if (
-    password.length < 8 ||
-    !/[A-Z]/.test(password) ||
-    !/\d/.test(password) ||
-    this.isCommonPassword(password) ||
-    password.toLowerCase().includes(username)
-  ) {
-    return false;
-  }
-  return true;
-};
-
-// Method to validate password for admin role
-userSchema.methods.isAdminPasswordValid = function (password) {
-  if (
-    password.length < 8 ||
-    !/[A-Z]/.test(password) ||
-    !/[a-z]/.test(password) ||
-    !/\d/.test(password) ||
-    !/[!@#$%^&*]/.test(password) ||
-    this.isCommonPattern(password)
-  ) {
-    return false;
-  }
   return true;
 };
 
@@ -171,11 +123,7 @@ userSchema.methods.isCommonPassword = function (password) {
 
 // Method to check if the password is based on commonly used patterns
 userSchema.methods.isCommonPattern = function (password) {
-  const sequentialPatterns = [
-    "12345678",
-    "abcdefgh",
-    "qwertyui",
-  ];
+  const sequentialPatterns = ["12345678", "abcdefgh", "qwertyui"];
   return sequentialPatterns.includes(password);
 };
 

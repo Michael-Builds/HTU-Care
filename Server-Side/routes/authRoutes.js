@@ -1,9 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-const router = express.Router();
 const User = mongoose.model("User");
 const dotenv = require("dotenv");
+const multer = require('multer'); // For handling file uploads
+// const User = require('../models/User'); //To enable use catch the user's details and id as well
+
+const upload = multer({ dest: 'uploads/' });
+const router = express.Router();
 
 //dotenv config
 dotenv.config();
@@ -134,6 +138,47 @@ router.put("/users", async (req, res) => {
     res.json({ message: "User updated successfully" });
   } catch (error) {
     res.status(500).json({ error: "Failed to update user" });
+  }
+});
+
+// Endpoint for updating user details
+router.patch('/users/:id', upload.single('image'), async (req, res) => {
+  const { id } = req.params;
+  const { email, password, username } = req.body;
+  const image = req.file;
+
+  try {
+    // Find the user by ID
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update user details
+    if (email) {
+      user.email = email;
+    }
+
+    if (password) {
+      user.password = password;
+    }
+
+    if (username) {
+      user.username = username;
+    }
+
+    if (image) {
+      // Assuming the User model has an 'image' field to store the image path
+      user.image = image.path;
+    }
+
+    // Save the updated user
+    await user.save();
+
+    res.json({ message: 'User details updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update user details' });
   }
 });
 
