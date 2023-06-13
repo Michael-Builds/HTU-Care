@@ -101,46 +101,6 @@ router.get("/admin/dashboard", async (req, res) => {
   }
 });
 
-// PUT endpoint for updating user information, including email, password, and username
-router.put("/users", async (req, res) => {
-  const { email, username, currentPassword, newPassword } = req.body;
-
-  try {
-    let user;
-    if (email) {
-      user = await User.findOne({ email });
-    } else if (username) {
-      user = await User.findOne({ username });
-    }
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Update the user's password if current password and newPassword are provided
-    if (currentPassword && newPassword) {
-      await user.updatePassword(currentPassword, newPassword);
-    }
-
-    // Update the user's email if provided
-    if (email) {
-      user.email = email;
-    }
-
-    // Update the user's username if provided
-    if (username) {
-      user.username = username;
-    }
-
-    // Save the updated user
-    await user.save();
-
-    res.json({ message: "User updated successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to update user" });
-  }
-});
-
 // Endpoint for updating user details
 router.patch('/users/:id', upload.single('image'), async (req, res) => {
   const { id } = req.params;
