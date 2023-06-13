@@ -76,23 +76,15 @@ router.post("/appointments", async (req, res) => {
   }
 });
 
-
-// GET route for fetching appointment details for a specific user
-router.get("/appointments/user/:userId", async (req, res) => {
+// Endpoint for retrieving appointment details
+router.get('/appointments', async (req, res) => {
+  
   try {
-    const userId = req.params.userId;
-
-    // Find the appointments based on the user ID
-    const appointments = await Appointment.find({ user: userId });
-
-    if (appointments.length === 0) {
-      return res.status(404).json({ error: "No appointments found for the user" });
-    }
-
-    res.status(200).json({ appointments });
+    const appointmentDetails = await Appointment.find();
+    res.json(appointmentDetails);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to fetch appointment details" });
+    res.status(500).json({ error: 'Failed to fetch appointment details' });
   }
 });
 

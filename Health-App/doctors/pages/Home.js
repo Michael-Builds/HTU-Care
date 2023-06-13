@@ -22,30 +22,30 @@ const Home = () => {
   const [userCount, setUserCount] = useState(0);
   const [appointmentCount, setAppointmentCount] = useState(0);
 
-//useEffect for reading and displaying the current number of user's and appointments count in our database
-useEffect(() => {
-  fetch("http://192.168.43.237:4000/admin/dashboard")
-    .then((res) => res.json())
-    .then((data) => {
-      setUserCount(data.userCount);
-      setLoading(false);
-    })
-    .catch((error) => {
-      console.log("Error fetching counts", error);
-      setLoading(false);
-    });
-}, []);
-  
-useEffect(() => {
-  fetch("http://192.168.43.237:4000/appointments/count")
-    .then((response) => response.json())
-    .then((data) => {
-      setAppointmentCount(data.count);
-    })
-    .catch((error) => {
-      console.error("Error fetching appointment count:", error);
-    });
-}, []);
+  //useEffect for reading and displaying the current number of user's and appointments count in our database
+  useEffect(() => {
+    fetch("http://192.168.43.237:4000/admin/dashboard")
+      .then((res) => res.json())
+      .then((data) => {
+        setUserCount(data.userCount);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log("Error fetching counts", error);
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch("http://192.168.43.237:4000/appointments/count")
+      .then((response) => response.json())
+      .then((data) => {
+        setAppointmentCount(data.count);
+      })
+      .catch((error) => {
+        console.error("Error fetching appointment count:", error);
+      });
+  }, []);
 
   // Data variables
   const data = [

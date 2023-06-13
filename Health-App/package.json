@@ -28,6 +28,7 @@
     "expo-status-bar": "~1.4.4",
     "jsonwebtoken": "^9.0.0",
     "jwt-decode": "^3.1.2",
+    "moment": "^2.29.4",
     "nanoid": "^4.0.2",
     "native-base": "^3.4.28",
     "nodemailer": "^6.9.1",
