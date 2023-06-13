@@ -14,7 +14,6 @@ import HealthRecords from "../screens/HealthRecords";
 import ViewRecords from "../screens/ViewRecords";
 import PasswordUpdate from "../screens/Update";
 import Prescription from "../screens/Prescription";
-import Settings from "../screens/Settings";
 import Logout from "../screens/Logout";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -176,7 +175,7 @@ const CustomDrawerContent = (props) => {
               fontWeight: "bold",
             }}
           >
-            Records
+            Upload Records
           </Text>
         </TouchableOpacity>
 
@@ -273,7 +272,7 @@ const CustomDrawerContent = (props) => {
               fontWeight: "bold",
             }}
           >
-            Settings
+            Prescriptions
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -395,7 +394,7 @@ const SideDrawer = () => {
         component={PasswordUpdate}
         options={{ headerShown: false }}
       />
-      {/* settings changed to prescription */}
+
       <Drawer.Screen
         name="Prescription"
         component={Prescription}

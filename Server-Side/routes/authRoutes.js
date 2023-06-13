@@ -132,7 +132,6 @@ router.patch('/users/:id', upload.single('image'), async (req, res) => {
       // Assuming the User model has an 'image' field to store the image path
       user.image = image.path;
     }
-
     // Save the updated user
     await user.save();
 
