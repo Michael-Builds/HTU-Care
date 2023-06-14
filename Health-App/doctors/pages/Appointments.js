@@ -24,18 +24,43 @@ const AppointmentDetailsCard = ({ details }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+  const [accepted, setAccepted] = useState(false);
 
   const toggleDetails = () => {
     setShowDetails(!showDetails);
   };
 
-  const handleAccept = (id) => {
-    // handle accept logic here
-  };
+  const handleAccept = async (id) => {};
 
-  const handleReject = (id) => {
+  const handleReject = async (id) => {
     setShowRejectModal(true);
   };
+
+
+// handle reject button
+const handleSend = async (id) => {
+  if (!rejectReason) {
+    // Reject reason is empty, display an error message or perform necessary actions
+    return;
+  }
+  try {
+    // Make a POST request to the server-side endpoint to save the reject message
+    const response = await axios.post(
+      "http://192.168.43.237:4000/appointments/reject", // Updated endpoint URL
+      {
+        userId: id, // Change to userId instead of appointmentId
+        rejectReason: rejectReason,
+      }
+    );
+    // Close the reject modal after successful submission
+    closeModal();
+    // Handle the response if needed (e.g., show a success message)
+    console.log(response.data);
+  } catch (error) {
+    // Handle any errors that occur during the request
+    console.log(error);
+  }
+};
 
   const closeModal = () => {
     setShowRejectModal(false);
@@ -57,12 +82,12 @@ const AppointmentDetailsCard = ({ details }) => {
       {showDetails && (
         <View style={styles.detailsContainer}>
           <Text style={styles.titles}>Appointment Details {details.id}</Text>
-        <View style={styles.detailsContents}>
-          <Text>Patient: {details.fullName}</Text>
-          <Text>Email: {details.email}</Text>
-          <Text>Date: {details.addedOn}</Text>
-          <Text>Time: {formatTime(details.time)}</Text>
-          <Text>Condition: {details.condition}</Text>
+          <View style={styles.detailsContents}>
+            <Text>Patient: {details.fullName}</Text>
+            <Text>Email: {details.email}</Text>
+            <Text>Date: {details.addedOn}</Text>
+            <Text>Time: {formatTime(details.time)}</Text>
+            <Text>Condition: {details.condition}</Text>
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
@@ -71,6 +96,7 @@ const AppointmentDetailsCard = ({ details }) => {
             >
               <Text style={styles.buttonText}>Accept</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               style={styles.button}
               onPress={() => handleReject(details.id)}
@@ -93,14 +119,19 @@ const AppointmentDetailsCard = ({ details }) => {
               multiline
             />
             <View style={styles.modalButtonContainer}>
+              {/* Canceling the Rejection */}
               <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
+
+              {/* Sending Reject Message Button */}
               <TouchableOpacity
                 style={styles.modalButton}
-                onPress={() => handleReject(details.id)}
+                onPress={() => {
+                  handleSend(details.id); 
+                }}
               >
-                <Text style={styles.modalButtonText}>Reject</Text>
+                <Text style={styles.modalButtonText}>Send</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -266,7 +297,7 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: "white",
     padding: 20,
-    width: '80%',
+    width: "80%",
     borderRadius: 10,
   },
   input: {
@@ -277,7 +308,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlignVertical: "top",
   },
-  
+
   modalText: {
     marginBottom: 30,
     fontSize: 14,
