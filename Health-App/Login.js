@@ -29,6 +29,7 @@ const Login = () => {
     navigation.navigate("Signup");
   };
 
+  // Handling the Login Logic and it's authentications
   handleSubmit = () => {
     // Email Validity
     const isEmailValid = (email) => {
