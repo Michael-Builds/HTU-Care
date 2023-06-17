@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const rejectedAppointmentSchema = new mongoose.Schema({
   appointment: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Appointment',
+    ref: "Appointment",
     required: true,
   },
   rejectReason: {
@@ -17,6 +17,9 @@ const rejectedAppointmentSchema = new mongoose.Schema({
   },
 });
 
-const RejectedAppointment = mongoose.model('RejectedAppointment', rejectedAppointmentSchema);
+const RejectedAppointment = mongoose.model(
+  "RejectedAppointment",
+  rejectedAppointmentSchema
+);
 
 module.exports = RejectedAppointment;

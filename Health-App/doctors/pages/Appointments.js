@@ -25,26 +25,77 @@ const AppointmentDetailsCard = ({ details }) => {
   const navigation = useNavigation();
   const [showDetails, setShowDetails] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
-  const [alertMessage, setAlertMessage] = useState('');
+  const [acceptInfo, setAcceptInfo] = useState("");
 
   const toggleDetails = () => {
     setShowDetails(!showDetails);
   };
 
-  const handleAccept = async (id) => {
+  const handleAccept = async () => {
+    setShowAcceptModal(true);
     // TODO: Implement the handleAccept functionality
   };
 
+  // Handling of rejection Modal and it's functionalities
   const handleReject = () => {
     setShowRejectModal(true);
   };
 
+  //Handling the submittion of appointment Acceptance
+  const handleSubmit = async (appointmentId, acceptInfo) => {
+    try {
+      //Validating input data for acceptance
+      if (!acceptInfo) {
+        Alert.alert("Invalid Request Data");
+      }
+
+      const acceptanceResponse = await axios.post(
+        "http://192.168.43.237:4000/appointments/accept",
+        {
+          appointmentId: appointmentId,
+          acceptInfo,
+        }
+      );
+      console.log(acceptanceResponse.data.message);
+      Alert.alert("Success", "Appointment Accepted Successfully!");
+
+      //Navigate back to the Home Screen
+      navigation.navigate("Home");
+
+      // Retrieve the updated appointment details
+      const detailsResponse = await axios.get(
+        "http://192.168.43.237:4000/appointments"
+      );
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.error) {
+        //Acceptance request failed with a sepcific error message
+        console.error("Error", "Error while sending acceptance");
+      } else if (error.response && error.response.status === 404) {
+        //Appointment not found
+        Alert.alert("Error", "Appointment not Found");
+      } else if (error.message === "Invalid request data") {
+        //Invalid request data
+
+        Alert.alert("Error", "Empty Input field");
+      } else {
+        //other generic errors
+        Alert.alert("Error", "An error occurred while accepting");
+      }
+    }
+  };
+
+  const closeModals = () => {
+    setShowAcceptModal(false);
+  };
+
+  //Handling of Appointment Rejection
   const handleSend = async (appointmentId, rejectReason) => {
     try {
-      // Validate input data
+      // Validate input data for rejection
       if (!rejectReason) {
-        throw new Error("Invalid request data");
+        Alert.alert("Invalid request data");
       }
 
       // Send the rejection request to the server
@@ -59,7 +110,8 @@ const AppointmentDetailsCard = ({ details }) => {
       // Rejection request successful
       console.log(rejectionResponse.data.message);
       Alert.alert("Success", "Appointment Rejected successfully!");
-      // Navigate back to the appointments screen
+
+      // Navigate back to the Home screen
       navigation.navigate("Home");
 
       // Retrieve the updated appointment details
@@ -131,6 +183,37 @@ const AppointmentDetailsCard = ({ details }) => {
         </View>
       )}
 
+      {/* Modal for Acceptance and any additional information for the patient*/}
+      <Modal visible={showAcceptModal} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Additional Information:</Text>
+            <TextInput
+              style={styles.input}
+              value={acceptInfo}
+              onChangeText={setAcceptInfo}
+              placeholder="Additional Information"
+              multiline
+            />
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={closeModals}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => handleSubmit(details.id, acceptInfo)}
+              >
+                <Text style={styles.modalButtonText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal for Rejection and Reason for rejection */}
       <Modal visible={showRejectModal} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
