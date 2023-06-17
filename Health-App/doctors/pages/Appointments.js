@@ -4,6 +4,7 @@ import {
   SafeAreaView,
   Text,
   View,
+  Alert,
   TextInput,
   ScrollView,
   StyleSheet,
@@ -21,46 +22,72 @@ const formatTime = (time) => {
 };
 
 const AppointmentDetailsCard = ({ details }) => {
+  const navigation = useNavigation();
   const [showDetails, setShowDetails] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
-  const [accepted, setAccepted] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const toggleDetails = () => {
     setShowDetails(!showDetails);
   };
 
-  const handleAccept = async (id) => {};
+  const handleAccept = async (id) => {
+    // TODO: Implement the handleAccept functionality
+  };
 
-  const handleReject = async (id) => {
+  const handleReject = () => {
     setShowRejectModal(true);
   };
 
-
-// handle reject button
-const handleSend = async (id) => {
-  if (!rejectReason) {
-    // Reject reason is empty, display an error message or perform necessary actions
-    return;
-  }
-  try {
-    // Make a POST request to the server-side endpoint to save the reject message
-    const response = await axios.post(
-      "http://192.168.43.237:4000/appointments/reject", // Updated endpoint URL
-      {
-        userId: id, // Change to userId instead of appointmentId
-        rejectReason: rejectReason,
+  const handleSend = async (appointmentId, rejectReason) => {
+    try {
+      // Validate input data
+      if (!rejectReason) {
+        throw new Error("Invalid request data");
       }
-    );
-    // Close the reject modal after successful submission
-    closeModal();
-    // Handle the response if needed (e.g., show a success message)
-    console.log(response.data);
-  } catch (error) {
-    // Handle any errors that occur during the request
-    console.log(error);
-  }
-};
+
+      // Send the rejection request to the server
+      const rejectionResponse = await axios.post(
+        "http://192.168.43.237:4000/appointments/reject",
+        {
+          appointmentId: appointmentId,
+          rejectReason,
+        }
+      );
+
+      // Rejection request successful
+      console.log(rejectionResponse.data.message);
+      Alert.alert("Success", "Appointment Rejected successfully!");
+      // Navigate back to the appointments screen
+      navigation.navigate("Home");
+
+      // Retrieve the updated appointment details
+      const detailsResponse = await axios.get(
+        "http://192.168.43.237:4000/appointments"
+      );
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.error) {
+        // Rejection request failed with a specific error message
+        console.error(
+          "Error while sending rejection:",
+          error.response.data.error
+        );
+      } else if (error.response && error.response.status === 404) {
+        // Appointment not found
+        console.error("Appointment not found");
+      } else if (error.message === "Invalid request data") {
+        // Invalid request data
+        console.error("Invalid request data");
+      } else {
+        // Other generic error
+        console.error(
+          "An error occurred while sending rejection:",
+          error.message
+        );
+      }
+    }
+  };
 
   const closeModal = () => {
     setShowRejectModal(false);
@@ -97,10 +124,7 @@ const handleSend = async (id) => {
               <Text style={styles.buttonText}>Accept</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleReject(details.id)}
-            >
+            <TouchableOpacity style={styles.button} onPress={handleReject}>
               <Text style={styles.buttonText}>Reject</Text>
             </TouchableOpacity>
           </View>
@@ -110,26 +134,22 @@ const handleSend = async (id) => {
       <Modal visible={showRejectModal} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Enter Reason for Rejection:</Text>
+            <Text style={styles.modalText}>Type Reason for Rejection:</Text>
             <TextInput
               style={styles.input}
               value={rejectReason}
-              onChangeText={(text) => setRejectReason(text)}
+              onChangeText={setRejectReason}
               placeholder="Reason"
               multiline
             />
             <View style={styles.modalButtonContainer}>
-              {/* Canceling the Rejection */}
               <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
 
-              {/* Sending Reject Message Button */}
               <TouchableOpacity
                 style={styles.modalButton}
-                onPress={() => {
-                  handleSend(details.id); 
-                }}
+                onPress={() => handleSend(details.id, rejectReason)}
               >
                 <Text style={styles.modalButtonText}>Send</Text>
               </TouchableOpacity>
@@ -174,7 +194,7 @@ const Appointment = () => {
       month: "long",
       day: "numeric",
       year: "numeric",
-    }); // Format the date as "Month, Day and Year" (e.g., January 21, 2023)
+    });
   };
 
   const groupDetailsByDate = () => {
@@ -190,7 +210,7 @@ const Appointment = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundClor: "" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "" }}>
       <StatusBar
         hidden={false}
         backgroundColor="#191970"

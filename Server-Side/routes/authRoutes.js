@@ -141,4 +141,23 @@ router.patch('/users/:id', upload.single('image'), async (req, res) => {
   }
 });
 
+
+// Endpoint for fetching user details by ID
+router.get("/users/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ userID: user._id });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch user details" });
+  }
+});
+
+
+
 module.exports = router;

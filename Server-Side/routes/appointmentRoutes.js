@@ -5,15 +5,16 @@ const RejectedAppointment = require("../models/RejectedAppointment");
 const User = require("../models/User");
 const moment = require("moment");
 
+
 // Endpoint for uploading the appointments of a user into our database
 router.post("/appointments", async (req, res) => {
   try {
-    const { email, fullName, date, time, condition, accepted } = req.body;
+    const { email, fullName, date, time, condition } = req.body;
 
     // Find the user based on the email address
     const user = await User.findOne({ email });
 
-    //If user isn't found, return an error
+    // If user isn't found, return an error
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -51,7 +52,6 @@ router.post("/appointments", async (req, res) => {
       date: formattedDate,
       time: formattedTime,
       condition,
-      accepted, // Store the accepted status
     });
 
     // Save the appointment to the database
@@ -77,23 +77,38 @@ router.post("/appointments", async (req, res) => {
   }
 });
 
-// Endpoint for POST /appointments/reject
+
+
+//Endpoint for posting the rejection of appointment
 router.post("/appointments/reject", async (req, res) => {
   try {
-    const { userId, rejectReason } = req.body;
+    const { appointmentId, rejectReason } = req.body;
 
-    // Retrieve the appointment from the database based on the user
-    const appointment = await Appointment.findOne({ user: userId });
-
-    // if appointment not found, return an error
-    if (!appointment) {
-      return res.status(404).json({ error: 'No appointment found for the user' });
+    // Validate input data
+    if (!rejectReason) {
+      return res.status(400).json({ error: "Invalid request data" });
     }
-    
+
+
+    // Find the appointment in the database based on the appointment ID
+    const appointment = await Appointment.findOne({id: appointmentId});
+
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found" });
+    }
+
+    // Update the appointment status to "rejected" or add a `rejected` field
+    appointment.status = "rejected"; 
+    await appointment.save();
+
     // Create a new rejected appointment instance
     const rejectedAppointment = new RejectedAppointment({
-      userId, // Use the userId
-      appointmentId: appointment._id, // Store the appointmentId for reference
+      appointment: appointment._id,
+      fullname: appointment.fullName,
+      email: appointment.email,
+      date: appointment.date,
+      time: appointment.time,
+      condition: appointment.condition,
       rejectReason,
       rejectedOn: new Date(),
     });
@@ -104,16 +119,37 @@ router.post("/appointments/reject", async (req, res) => {
     // Remove the appointment from the appointment collection
     await Appointment.findByIdAndRemove(appointment._id);
 
+    // Log the rejection
+    console.log(`Appointment ${appointment._id} rejected`);
+
     // Send a response indicating the rejection was successful
     res.status(200).json({ message: "Appointment rejected successfully" });
   } catch (error) {
-    // Handle any errors that occur during the rejection process
-    console.log(error);
+    console.error("An error occurred while rejecting the appointment:", error);
+
+    // Handle specific error cases
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ error: "Validation error" });
+    }
+
+    // Handle other error cases
     res
       .status(500)
       .json({ error: "An error occurred while rejecting the appointment" });
   }
 });
+
+// Endpoint to count the number of appointments in the rejectedappointment database
+router.get('/rejectedappointments/count', async (req, res) => {
+  try {
+    const count = await RejectedAppointment.countDocuments();
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ error: 'Error counting appointments' });
+  }
+});
+
+
 
 // Endpoint for retrieving appointment details
 router.get("/appointments", async (req, res) => {
@@ -126,11 +162,13 @@ router.get("/appointments", async (req, res) => {
   }
 });
 
+
+
 // Endpoint to get the count of appointments
 router.get("/appointments/count", async (req, res) => {
   try {
     // Get the count of appointments
-    const count = await Appointment.countDocuments();
+    const count = await Appointment.countDocuments({});
 
     res.status(200).json({ count });
   } catch (error) {
@@ -138,7 +176,5 @@ router.get("/appointments/count", async (req, res) => {
     res.status(500).json({ error: "Failed to get appointment count" });
   }
 });
-
-//Endpoint for getting and sending the Appointment rejected message to our user who submitted the appointment
 
 module.exports = router;

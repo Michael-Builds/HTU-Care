@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 
 const rejectedAppointmentSchema = new mongoose.Schema({
-  userId: {
+  appointment: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'Appointment',
     required: true,
   },
   rejectReason: {

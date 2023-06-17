@@ -5,6 +5,7 @@ import {
   StyleSheet,
   StatusBar,
   SafeAreaView,
+  ScrollView,
   Image,
   TextInput,
   Alert,
@@ -14,6 +15,7 @@ import {
 import CustomDrawer from "../navigators/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
+import * as ImagePicker from 'expo-image-picker';
 import axios from "axios";
 
 const Update = () => {
@@ -23,22 +25,62 @@ const Update = () => {
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
+ 
+  const handleImageUpload = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        throw new Error('Permission to access media library was denied');
+      }
+
+      const pickerResult = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      if (!pickerResult.cancelled) {
+        setSelectedImage(pickerResult.uri);
+      }
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+    }
+  };
+
+  // Handle click for submitting the update
   const handleSubmit = async () => {
-    if (!newUsername && !newEmail && !newPassword) {
+    if (!newUsername && !newEmail && !newPassword && !image) {
       Alert.alert("Error", "Please fill at least one field");
       return;
     }
+
     setLoading(true);
     try {
-      const userId = ""; // Replace with the user ID or retrieve it from your authentication system
+      const userId = userID; // Replace with the user ID or retrieve it from your authentication system
       const payload = {};
       if (newUsername) payload.username = newUsername;
       if (newEmail) payload.email = newEmail;
       if (newPassword) payload.password = newPassword;
+      if (image) {
+        // Create a new FormData object to send the image file
+        const formData = new FormData();
+        formData.append("image", {
+          uri: image,
+          type: "image/jpeg",
+          name: "profile.jpg",
+        });
+        payload.image = formData;
+      }
 
       // Send the update profile request with the obtained user ID
-      await axios.put(`http://192.168.43.237:4000/users/${userId}`, payload);
+      await axios.patch(`http://192.168.43.237:4000/users/${userId}`, payload, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data for file uploads
+        },
+      });
 
       Alert.alert("Success", "Your profile has been updated.");
       navigation.navigate("Homes");
@@ -57,89 +99,108 @@ const Update = () => {
         barStyle="light-content"
       />
       <CustomDrawer navigation={navigation} />
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Image
-            resizeMode="contain"
-            style={styles.headerImg}
-            source={require("../../assets/images/Logo.png")}
-          />
-          <Text style={styles.title}>
-            Update <Text style={{ color: "#075eec" }}>Profile</Text>
-          </Text>
-          <Text style={styles.subtitle}>
-            Get access to your portfolio and more
-          </Text>
-        </View>
-        <View style={styles.form}>
-          <View style={styles.input}>
-            <Text style={styles.inputLabel}>Username</Text>
-            <TextInput
-              style={styles.inputControl}
-              autoCorrect={false}
-              value={newUsername}
-              onChangeText={(text) => setNewUsername(text)}
-              placeholder="New Username"
-              placeholderTextColor="#6b7280"
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Image
+              resizeMode="contain"
+              style={styles.headerImg}
+              source={require("../../assets/images/Logo.png")}
             />
+            <Text style={styles.title}>
+              Update <Text style={{ color: "#075eec" }}>Profile</Text>
+            </Text>
+            <Text style={styles.subtitle}>
+              Get access to your portfolio and more
+            </Text>
           </View>
-          <View style={styles.input}>
-            <Text style={styles.inputLabel}>Email</Text>
-            <TextInput
-              style={styles.inputControl}
-              autoCorrect={false}
-              value={newEmail}
-              onChangeText={(text) => setNewEmail(text)}
-              placeholder="New Email"
-              placeholderTextColor="#6b7280"
-            />
-          </View>
-          <View style={styles.input}>
-            <Text style={styles.inputLabel}>New Password</Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={styles.form}>
+            <View style={styles.input}>
+              <Text style={styles.inputLabel}>Username</Text>
               <TextInput
-                style={[
-                  styles.inputControl,
-                  { flex: 1, borderRightWidth: 1, borderColor: "#ccc" },
-                ]}
+                style={styles.inputControl}
                 autoCorrect={false}
-                value={newPassword}
-                onChangeText={(text) => setNewPassword(text)}
-                placeholder="New Password"
+                value={newUsername}
+                onChangeText={(text) => setNewUsername(text)}
+                placeholder="New Username"
                 placeholderTextColor="#6b7280"
-                secureTextEntry={!showNewPassword}
               />
+            </View>
+            <View style={styles.input}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <TextInput
+                style={styles.inputControl}
+                autoCorrect={false}
+                value={newEmail}
+                onChangeText={(text) => setNewEmail(text)}
+                placeholder="New Email"
+                placeholderTextColor="#6b7280"
+              />
+            </View>
 
-              <View style={{ position: "absolute", right: 8 }}>
-                <TouchableOpacity
-                  onPress={() => setShowNewPassword(!showNewPassword)}
-                >
-                  <MaterialIcons
-                    name={showNewPassword ? "visibility-off" : "visibility"}
-                    size={24}
-                    color="#6b7280"
-                  />
-                </TouchableOpacity>
+            <View style={styles.input}>
+              <Text style={styles.inputLabel}>New Password</Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <TextInput
+                  style={[
+                    styles.inputControl,
+                    { flex: 1, borderRightWidth: 1, borderColor: "#ccc" },
+                  ]}
+                  autoCorrect={false}
+                  value={newPassword}
+                  onChangeText={(text) => setNewPassword(text)}
+                  placeholder="New Password"
+                  placeholderTextColor="#6b7280"
+                  secureTextEntry={!showNewPassword}
+                />
+
+                <View style={{ position: "absolute", right: 8 }}>
+                  <TouchableOpacity
+                    onPress={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    <MaterialIcons
+                      name={showNewPassword ? "visibility-off" : "visibility"}
+                      size={24}
+                      color="#6b7280"
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
 
-          <View style={styles.formAction}>
-            <TouchableOpacity onPress={handleSubmit}>
-              <View style={styles.btn}>
-                {loading ? (
-                  <View style={styles.loaderContainer}>
-                    <ActivityIndicator color="#fff" />
-                    <Text style={styles.loaderText}>Please wait...</Text>
-                  </View>
-                ) : (
-                  <Text style={styles.btnText}>Update</Text>
-                )}
-              </View>
-            </TouchableOpacity>
+            <View style={styles.input}>
+              <Text style={styles.inputLabel}>Profile Image</Text>
+              <TouchableOpacity
+                style={styles.uploadButton}
+                onPress={() => handleImageUpload("Selected Image")}
+              >
+                <Text style={styles.uploadButtonText}>Choose Image</Text>
+              </TouchableOpacity>
+              {selectedImage && (
+                <Image
+                  source={{ uri: selectedImage }}
+                  style={styles.selectedImage}
+                />
+              )}
+            </View>
+
+            <View style={styles.formAction}>
+              <TouchableOpacity onPress={handleSubmit}>
+                <View style={styles.btn}>
+                  {loading ? (
+                    <View style={styles.loaderContainer}>
+                      <ActivityIndicator color="#fff" />
+                      <Text style={styles.loaderText}>Please wait...</Text>
+                    </View>
+                  ) : (
+                    <Text style={styles.btnText}>Update Profile</Text>
+                  )}
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -196,6 +257,7 @@ const styles = StyleSheet.create({
   formAction: {
     marginVertical: 24,
     marginBottom: 5,
+    marginTop: -2,
   },
   btn: {
     flexDirection: "row",
@@ -220,6 +282,21 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 17,
     fontWeight: "600",
+  },
+  uploadButton: {
+    backgroundColor: '#ccc',
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  uploadButtonText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  selectedImage: {
+    width: 80,
+    height: 80,
+    resizeMode: 'cover',
   },
 });
 
