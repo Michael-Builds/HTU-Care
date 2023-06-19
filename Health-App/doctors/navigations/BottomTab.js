@@ -34,7 +34,7 @@ const BottomTab = () => {
     fetchNewAppointmentCount();
 
     // Set up interval to fetch new appointment count periodically
-    const interval = setInterval(fetchNewAppointmentCount, 5 * 60 * 1000); // 5 minutes
+    const interval = setInterval(fetchNewAppointmentCount, 1 * 60 * 1000); // 5 minutes
     // Clean up the interval when the component unmounts
     return () => {
       clearInterval(interval);

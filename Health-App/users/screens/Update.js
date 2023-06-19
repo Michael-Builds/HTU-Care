@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,11 +11,12 @@ import {
   Alert,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import CustomDrawer from "../navigators/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 
 const Update = () => {
@@ -26,66 +27,80 @@ const Update = () => {
   const [loading, setLoading] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [userId, setUserId] = useState(null); // Added state for user ID
 
- 
-  const handleImageUpload = async () => {
+
+//handle click for image upload
+const handleImageUpload = async () => {
+  try {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      throw new Error("Permission to access media library was denied");
+    }
+
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!pickerResult.canceled && pickerResult.assets.length > 0) {
+      setSelectedImage(pickerResult.assets[0].uri); // Update the URI assignment
+    }
+  } catch (error) {
+    console.error("Failed to upload image:", error);
+  }
+};
+
+
+useEffect(() => {
+  const fetchUserId = async () => {
     try {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        throw new Error('Permission to access media library was denied');
-      }
-
-      const pickerResult = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-      });
-
-      if (!pickerResult.cancelled) {
-        setSelectedImage(pickerResult.uri);
-      }
+      const response = await axios.get("http://192.168.43.237:4000/users/id");
+      const { userID } = response.data;
+      setUserId(userID);
     } catch (error) {
-      console.error('Failed to upload image:', error);
+      console.log("Error: Failed to fetch user ID.", error);
     }
   };
 
-  // Handle click for submitting the update
+  fetchUserId();
+}, []);
+
+  //handle click for submitting the form
   const handleSubmit = async () => {
-    if (!newUsername && !newEmail && !newPassword && !image) {
+    if (!newUsername && !newEmail && !newPassword && !selectedImage) {
       Alert.alert("Error", "Please fill at least one field");
       return;
     }
-
     setLoading(true);
     try {
-      const userId = userID; // Replace with the user ID or retrieve it from your authentication system
-      const payload = {};
-      if (newUsername) payload.username = newUsername;
-      if (newEmail) payload.email = newEmail;
-      if (newPassword) payload.password = newPassword;
-      if (image) {
-        // Create a new FormData object to send the image file
-        const formData = new FormData();
-        formData.append("image", {
-          uri: image,
+
+      const payload = new FormData();
+      if (newUsername) payload.append("username", newUsername);
+      if (newEmail) payload.append("email", newEmail);
+      if (newPassword) payload.append("password", newPassword);
+      if (selectedImage) {
+        const imageUri =
+          Platform.OS === "android" ? `file://${selectedImage}` : selectedImage;
+        payload.append("image", {
+          uri: imageUri,
           type: "image/jpeg",
           name: "profile.jpg",
         });
-        payload.image = formData;
       }
 
-      // Send the update profile request with the obtained user ID
       await axios.patch(`http://192.168.43.237:4000/users/${userId}`, payload, {
         headers: {
-          "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data for file uploads
+          "Content-Type": "multipart/form-data",
         },
       });
 
       Alert.alert("Success", "Your profile has been updated.");
       navigation.navigate("Homes");
     } catch (error) {
-      Alert.alert("Error", "Failed to update profile.");
+      console.log("Error", "Failed to update profile.", error);
     } finally {
       setLoading(false);
     }
@@ -172,7 +187,7 @@ const Update = () => {
               <Text style={styles.inputLabel}>Profile Image</Text>
               <TouchableOpacity
                 style={styles.uploadButton}
-                onPress={() => handleImageUpload("Selected Image")}
+                onPress={handleImageUpload}
               >
                 <Text style={styles.uploadButtonText}>Choose Image</Text>
               </TouchableOpacity>
@@ -284,19 +299,19 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   uploadButton: {
-    backgroundColor: '#ccc',
+    backgroundColor: "#ccc",
     borderRadius: 4,
     paddingVertical: 8,
     paddingHorizontal: 12,
   },
   uploadButtonText: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   selectedImage: {
     width: 80,
     height: 80,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
 });
 

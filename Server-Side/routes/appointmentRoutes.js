@@ -114,7 +114,7 @@ router.post("/appointments/reject", async (req, res) => {
     await rejectedAppointment.save();
 
     // Remove the appointment from the appointment collection
-    await Appointment.findByIdAndRemove(appointment._id);
+    // await Appointment.findByIdAndRemove(appointment._id);
 
     // Log the rejection
     console.log(`Appointment ${appointment._id} rejected`);
@@ -149,7 +149,7 @@ router.post("/appointments/accept", async (req, res) => {
     //Find the appointment in the database based on the appointment ID
     const appointment = await Appointment.findOne({ id: appointmentId });
 
-    if (appointment) {
+    if (!appointment) {
       return res.status(404).json({ error: "Appointment not found" });
     }
 
@@ -173,7 +173,7 @@ router.post("/appointments/accept", async (req, res) => {
     await acceptedAppointment.save();
 
     //Remove the appointment from the appointment collection
-    await Appointment.findByIdAndRemove(appointment._id);
+    // await Appointment.findByIdAndRemove(appointment._id);
 
     //Log the acceptance
     console.log(`Appointment ${appointment._id} accepted`);
@@ -195,6 +195,7 @@ router.post("/appointments/accept", async (req, res) => {
   }
 });
 
+
 // Endpoint to count the number of appointments in the rejectedappointment database
 router.get("/rejectedappointments/count", async (req, res) => {
   try {
@@ -205,6 +206,7 @@ router.get("/rejectedappointments/count", async (req, res) => {
   }
 });
 
+
 //Endpoint to count the number of appointments in the acceptedappointment collection
 router.get("/acceptedappointments/count", async (req, res) => {
   try {
@@ -212,6 +214,53 @@ router.get("/acceptedappointments/count", async (req, res) => {
     res.json({ count });
   } catch (error) {
     res.status(500).json({ error: "Error counting appointments" });
+  }
+});
+
+// Endpoint for determining the acceptance or rejection of an appointment
+router.get("/appointments/:id/status", async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+
+    // Find the appointment in the database based on the appointment ID
+    const appointment = await Appointment.findOne({ id: appointmentId });
+
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found" });
+    }
+
+    // Check if the appointment has been accepted
+    const acceptedAppointment = await AcceptedAppointment.findOne({
+      appointment: appointment._id,
+    });
+
+    if (acceptedAppointment) {
+      return res.status(200).json({
+        message: "Appointment accepted",
+        acceptInfo: acceptedAppointment.acceptInfo,
+      });
+    }
+
+    // Check if the appointment has been rejected
+    const rejectedAppointment = await RejectedAppointment.findOne({
+      appointment: appointment._id,
+    });
+
+    if (rejectedAppointment) {
+      return res.status(200).json({
+        message: "Appointment rejected",
+        rejectReason: rejectedAppointment.rejectReason,
+      });
+    }
+
+    // If the appointment is neither accepted nor rejected, return a message
+    res.status(200).json({ message: "Appointment pending" });
+  } catch (error) {
+    console.error(
+      "An error occurred while determining appointment status:",
+      error
+    );
+    res.status(500).json({ error: "Failed to determine appointment status" });
   }
 });
 

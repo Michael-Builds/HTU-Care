@@ -247,6 +247,7 @@ const AppointmentDetailsCard = ({ details }) => {
 const Appointment = () => {
   const navigation = useNavigation();
   const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchAppointmentDetails();
@@ -261,6 +262,7 @@ const Appointment = () => {
       const response = await axios.get(
         "http://192.168.43.237:4000/appointments"
       );
+   
       const updatedDetails = response.data.map((details) => ({
         ...details,
         addedOn: formatDate(details.date),
@@ -303,14 +305,18 @@ const Appointment = () => {
 
       <ScrollView style={styles.container}>
         <Text style={styles.title}>Appointments</Text>
-        {Object.entries(groupDetailsByDate()).map(([date, details]) => (
-          <View key={date}>
-            <Text style={styles.date}>{date}</Text>
-            {details.map((detail) => (
-              <AppointmentDetailsCard key={detail._id} details={detail} />
-            ))}
-          </View>
-        ))}
+        {Object.entries(groupDetailsByDate()).length === 0 ? (
+          <Text style={styles.noAppointmentsText}>No Pending Appointments</Text>
+        ) : (
+          Object.entries(groupDetailsByDate()).map(([date, details]) => (
+            <View key={date}>
+              <Text style={styles.date}>{date}</Text>
+              {details.map((detail) => (
+                <AppointmentDetailsCard key={detail._id} details={detail} />
+              ))}
+            </View>
+          ))
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -434,6 +440,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
     fontSize: 14,
+  },
+  noAppointmentsText: {
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 25,
+    color: 'gray',
   },
 });
 

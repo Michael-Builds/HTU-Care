@@ -15,14 +15,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  image: {
-    data: Buffer,
-    contentType: String,
-  },
   role: {
     type: String,
     enum: ["user", "admin", "doctor"],
     default: "user",
+  },
+  image: {
+    data: Buffer,
+    contentType: String,
   },
 });
 

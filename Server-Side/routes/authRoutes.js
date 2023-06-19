@@ -3,10 +3,11 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const User = mongoose.model("User");
 const dotenv = require("dotenv");
-const multer = require('multer'); // For handling file uploads
-// const User = require('../models/User'); //To enable use catch the user's details and id as well
-
-const upload = multer({ dest: 'uploads/' });
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const { promisify } = require("util");
+const unlinkAsync = promisify(fs.unlink);
 const router = express.Router();
 
 //dotenv config
@@ -22,7 +23,7 @@ router.post("/signup", async (req, res) => {
     if (existingUser) {
       return res.status(422).send("User already exists");
     }
-    const user = new User({ username, email, password });
+    const user = new User({ username, email, password});
     await user.save();
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
@@ -101,18 +102,32 @@ router.get("/admin/dashboard", async (req, res) => {
   }
 });
 
-// Endpoint for updating user details
-router.patch('/users/:id', upload.single('image'), async (req, res) => {
+// Multer configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads");
+  },
+  filename: (req, file, cb) => {
+    console.log(file);
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + uniqueSuffix + ext); // Set the filename for the uploaded file
+  },
+});
+
+const upload = multer({ storage });
+// Endpoint for updating user details, including image upload
+router.patch("/users/:id", upload.single("image"), async (req, res) => {
   const { id } = req.params;
   const { email, password, username } = req.body;
   const image = req.file;
 
   try {
-    // Find the user by ID
+    // // Find the user by ID
     const user = await User.findById(id);
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Update user details
@@ -129,35 +144,40 @@ router.patch('/users/:id', upload.single('image'), async (req, res) => {
     }
 
     if (image) {
-      // Assuming the User model has an 'image' field to store the image path
-      user.image = image.path;
+      // Delete previous image if exists
+      if (user.image) {
+        await unlinkAsync(path.join(__dirname, "..", user.image));
+      }
+
+      // Set the path to the uploaded image
+      user.image = path.join("uploads", req.file.filename).replace(/\\/g, "/");
     }
+
     // Save the updated user
     await user.save();
 
-    res.json({ message: 'User details updated successfully' });
+    res.json({ message: "User details updated successfully" });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update user details' });
+    res.status(500).json({ error: "Failed to update user details" });
   }
 });
-
 
 // Endpoint for fetching user details by ID
-router.get("/users/:id", async (req, res) => {
-  const { id } = req.params;
+router.get("/users/:id", async (req, res, next) => {
+  const userId = req.params.id;
 
-  try {
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.json({ userID: user._id });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch user details" });
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ error: "Invalid user ID" });
   }
+
+  User.findById(userId)
+    .then(doc => {
+      if (!doc) {
+        return res.status(404).end();
+      }
+      return res.status(200).json(doc);
+    })
+    .catch(err => next(err));
 });
-
-
 
 module.exports = router;

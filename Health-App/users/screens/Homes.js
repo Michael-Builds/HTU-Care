@@ -38,8 +38,8 @@ const Home = () => {
 
     fetchRandomHealthTip();
 
-    // Update health tip every 2 minutes
-    const intervalId = setInterval(fetchRandomHealthTip, 2 * 60 * 1000);
+    // Update health tip every 1 minutes
+    const intervalId = setInterval(fetchRandomHealthTip, 1 * 60 * 1000);
 
     // Clean up the interval
     return () => clearInterval(intervalId);

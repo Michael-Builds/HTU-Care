@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, View, Text } from "react-native";
 import HomeStack from "../components/HomeStack";
@@ -6,6 +6,7 @@ import MessageStack from "../components/MessageStack";
 import AppointmentStack from "../components/AppointmentStack";
 import NotificationStack from "../components/NotificationStack";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 
@@ -15,7 +16,37 @@ const notification = "Notification";
 const message = "Message";
 
 const BottomTabNavigator = () => {
-  
+  const navigation = useNavigation();
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [userId, setUserId] = useState(null);
+
+  // Set the user ID when the user logs in or authenticates
+  const handleUserLogin = (userId) => {
+    setUserId(userId);
+  };
+
+  useEffect(() => {
+    if (!userId) return; // Skip if the user ID is not set
+
+    const fetchNotificationCounts = async () => {
+      try {
+        const acceptedUrl = `http://192.168.43.237:4000/acceptedappointments/count?userId=${userId}`;
+        const rejectedUrl = `http://192.168.43.237:4000/rejectedappointments/count?userId=${userId}`;
+
+        const acceptedCount = await fetchNotificationCounts(acceptedUrl);
+        const rejectedCount = await fetchNotificationCounts(rejectedUrl);
+
+        const totalCount = acceptedCount + rejectedCount;
+        setNotificationCount(totalCount);
+      } catch (error) {
+        console.error(error);
+        setNotificationCount(0);
+      }
+    };
+
+    fetchNotificationCounts();
+  }, [userId]);
+
   return (
     <Tab.Navigator
       initialRouteName={home}
@@ -23,7 +54,6 @@ const BottomTabNavigator = () => {
         headerShown: false,
         tabBarStyle: {
           display: "flex",
-
         },
         tabBarActiveTintColor: "#191970",
         tabBarInactiveTintColor: "grey",
@@ -41,9 +71,13 @@ const BottomTabNavigator = () => {
             return (
               <View>
                 <Ionicons name={iconName} size={size} color={color} />
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationBadgeText}>1</Text>
-                </View>
+                {notificationCount > 0 && (
+                  <View style={styles.notificationBadge}>
+                    <Text style={styles.notificationBadgeText}>
+                      {notificationCount}
+                    </Text>
+                  </View>
+                )}
               </View>
             );
           } else if (rn === notification) {
@@ -51,9 +85,13 @@ const BottomTabNavigator = () => {
             return (
               <View>
                 <Ionicons name={iconName} size={size} color={color} />
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationBadgeText}>5</Text>
-                </View>
+                {notificationCount > 0 && (
+                  <View style={styles.notificationBadge}>
+                    <Text style={styles.notificationBadgeText}>
+                      {notificationCount}
+                    </Text>
+                  </View>
+                )}
               </View>
             );
           }
@@ -64,11 +102,19 @@ const BottomTabNavigator = () => {
       <Tab.Screen name={home} component={HomeStack} />
       <Tab.Screen name={appointments} component={AppointmentStack} />
       <Tab.Screen name={message} component={MessageStack} />
-      <Tab.Screen name={notification} component={NotificationStack} />
+      <Tab.Screen
+        name={notification}
+        component={NotificationStack}
+        listeners={({ navigation }) => ({
+          focus: () => {
+            // Fetch notification counts when the NotificationStack screen is focused
+            setNotificationCount();
+          },
+        })}
+      />
     </Tab.Navigator>
   );
 };
-
 const styles = StyleSheet.create({
   notificationBadge: {
     position: "absolute",
