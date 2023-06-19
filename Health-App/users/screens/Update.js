@@ -57,9 +57,9 @@ const handleImageUpload = async () => {
 useEffect(() => {
   const fetchUserId = async () => {
     try {
-      const response = await axios.get("http://192.168.43.237:4000/users/id");
-      const { userID } = response.data;
-      setUserId(userID);
+      const response = await axios.get(`http://192.168.43.237:4000/users/${userId}`);
+      const user = response.data;
+      setUserId(user._id);
     } catch (error) {
       console.log("Error: Failed to fetch user ID.", error);
     }

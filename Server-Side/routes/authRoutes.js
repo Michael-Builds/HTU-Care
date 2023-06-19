@@ -117,13 +117,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 // Endpoint for updating user details, including image upload
+router.use("/users", upload.single("image"));
+
 router.patch("/users/:id", upload.single("image"), async (req, res) => {
   const { id } = req.params;
   const { email, password, username } = req.body;
   const image = req.file;
 
   try {
-    // // Find the user by ID
+    //Find the user by ID
     const user = await User.findById(id);
 
     if (!user) {
@@ -158,6 +160,11 @@ router.patch("/users/:id", upload.single("image"), async (req, res) => {
 
     res.json({ message: "User details updated successfully" });
   } catch (error) {
+    
+     // Handle errors related to file uploads
+     if (error.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({ error: "File size too large" });
+    }
     res.status(500).json({ error: "Failed to update user details" });
   }
 });
@@ -170,14 +177,18 @@ router.get("/users/:id", async (req, res, next) => {
     return res.status(400).json({ error: "Invalid user ID" });
   }
 
-  User.findById(userId)
-    .then(doc => {
-      if (!doc) {
-        return res.status(404).end();
-      }
-      return res.status(200).json(doc);
-    })
-    .catch(err => next(err));
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to fetch user details" });
+  }
 });
+
 
 module.exports = router;
