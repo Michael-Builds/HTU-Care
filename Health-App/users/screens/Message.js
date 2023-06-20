@@ -1,39 +1,116 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  Image,
+  TextInput,
   StatusBar,
   SafeAreaView,
-  TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
+  FlatList,
+  Image,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import CustomDrawer from "../navigators/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
+import * as Animatable from "react-native-animatable";
+import { LinearGradient } from "expo-linear-gradient";
 
 const Messages = () => {
   const navigation = useNavigation();
-  const [newMessage, setNewMessage] = useState("");
+  const [newTodo, setNewTodo] = useState("");
+  const [todos, setTodos] = useState([]);
+  const [editingTodoId, setEditingTodoId] = useState(null);
+  const [editingTodoText, setEditingTodoText] = useState("");
+  const headingRef = useRef(null);
 
-  const [messages, setMessages] = useState([
-    { id: 1, sender: "Sender", text: "Call me!" },
-    { id: 2, sender: "Receiver", text: "Hi there!" },
-  ]);
-
-  const handleSendMessage = () => {
-    if (newMessage.trim() !== "") {
-      const newId = messages.length + 1;
-      const newMessageObj = {
+  const handleAddTodo = () => {
+    if (newTodo.trim() !== "") {
+      const newId = todos.length + 1;
+      const newTodoObj = {
         id: newId,
-        sender: "Receiver",
-        text: newMessage,
+        title: newTodo,
+        completed: false,
       };
-      setMessages([...messages, newMessageObj]);
-      setNewMessage("");
+      setTodos([...todos, newTodoObj]);
+      setNewTodo("");
     }
+  };
+
+  const handleToggleTodo = (id) => {
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+  const handleDeleteTodo = (id) => {
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+  };
+
+  const handleEditTodo = (id, title) => {
+    setEditingTodoId(id);
+    setEditingTodoText(title);
+  };
+
+  const handleSaveEditTodo = () => {
+    if (editingTodoText.trim() !== "") {
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo.id === editingTodoId ? { ...todo, title: editingTodoText } : todo
+        )
+      );
+      setEditingTodoId(null);
+      setEditingTodoText("");
+    }
+  };
+
+  const renderTodoItem = ({ item }) => (
+    <View style={styles.todoItem}>
+      <TouchableOpacity
+        onPress={() => handleToggleTodo(item.id)}
+        style={styles.checkbox}
+      >
+        {item.completed && <Text style={styles.checkmark}>✓</Text>}
+      </TouchableOpacity>
+      {editingTodoId === item.id ? (
+        <TextInput
+          style={styles.editTodoInput}
+          value={editingTodoText}
+          onChangeText={setEditingTodoText}
+          autoFocus
+        />
+      ) : (
+        <Text style={styles.todoTitle}>{item.title}</Text>
+      )}
+
+      {editingTodoId === item.id ? (
+        <TouchableOpacity
+          onPress={() => handleSaveEditTodo(item.id)}
+          style={styles.saveEditButton}
+        >
+          <Ionicons name="checkmark" size={25} color="#000" />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={() => handleEditTodo(item.id, item.title)}
+          style={styles.editButton}
+        >
+          <Ionicons name="pencil" size={25} color="#000" />
+        </TouchableOpacity>
+      )}
+      <TouchableOpacity
+        onPress={() => handleDeleteTodo(item.id)}
+        style={styles.deleteButton}
+      >
+        <Ionicons name="trash-bin" size={25} color="#FF0000" />
+      </TouchableOpacity>
+    </View>
+  );
+
+  const animateHeader = () => {
+    headingRef.current?.bounceIn(1000);
   };
 
   return (
@@ -44,77 +121,47 @@ const Messages = () => {
         barStyle="light-content"
       />
       <CustomDrawer title="Home" isHome={true} navigation={navigation} />
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : null}
-      >
-        <View style={styles.container}>
-          <View style={styles.senderContainer}>
-            <Image
-              source={require("../../assets/images/nurse.png")}
-              style={styles.senderImage}
-            />
-            <View style={styles.senderNameContainer}>
-              <Text style={styles.senderName}>Sender</Text>
-            </View>
-            <View style={styles.senderMessageContainer}>
-              {messages.map((message) => {
-                if (message.sender === "Sender") {
-                  return (
-                    <View style={styles.senderQuote} key={message.id}>
-                      <Text style={styles.senderMessageText}>
-                        {message.text}
-                      </Text>
-                    </View>
-                  );
-                }
-                return null;
-              })}
-            </View>
-          </View>
-
-          <View style={styles.receiverContainer}>
-            <Image
-              source={require("../../assets/images/nurse.png")}
-              style={styles.receiverImage}
-            />
-            <View style={styles.recieverNameContainer}>
-              <Text style={styles.receiverName}>Receiver</Text>
-            </View>
-            <View style={styles.receiverMessageContainer}>
-              {messages.map((message) => {
-                if (message.sender === "Receiver") {
-                  return (
-                    <View style={styles.receiverQuote} key={message.id}>
-                      <View style={styles.receiverPointer} />
-                      <Text style={styles.receiverMessageText}>
-                        {message.text}
-                      </Text>
-                    </View>
-                  );
-                }
-                return null;
-              })}
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.messageBoxContainer}>
-          <TextInput
-            style={styles.messageBox}
-            placeholder="Type your message"
-            value={newMessage}
-            onChangeText={setNewMessage}
-            onSubmitEditing={handleSendMessage}
-          />
-          <TouchableOpacity
-            style={styles.sendButton}
-            onPress={handleSendMessage}
+      <View style={styles.container}>
+        <Animatable.View
+          style={styles.headerContainer}
+          animation="fadeIn"
+          duration={1000}
+          delay={500}
+          onAnimationEnd={animateHeader}
+        >
+          <Animatable.Text
+            ref={headingRef}
+            style={styles.heading}
+            animation="bounceIn"
+            duration={1000}
           >
-            <Text style={styles.sendButtonText}>Send</Text>
+            Todo List
+          </Animatable.Text>
+          <Text style={styles.slogan}>Stay Healthy, Stay Productive</Text>
+        </Animatable.View>
+
+        <FlatList
+          data={todos}
+          renderItem={renderTodoItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.todoList}
+        />
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter a new todo"
+            value={newTodo}
+            onChangeText={setNewTodo}
+          />
+          <TouchableOpacity style={styles.addButton} onPress={handleAddTodo}>
+            <Image
+              source={require("../../assets/images/add.png")}
+              style={styles.addButtonImage}
+            />
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -122,145 +169,91 @@ const Messages = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "row",
+    padding: 16,
     backgroundColor: "#F5F5F5",
   },
-  senderContainer: {
-    flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
-    padding: 16,
-    marginTop: 15,
+  headerContainer: {
+    alignItems: "center",
+    marginBottom: 24,
   },
-  receiverContainer: {
-    flex: 1,
-    alignItems: "flex-end",
-    justifyContent: "flex-start",
-    padding: 16,
-    marginTop: 40,
+  addButtonImage: {
+    width: 22,
+    height: 22,
+    tintColor: "#fff",
   },
-  senderImage: {
-    width: 40,
-    height: 40,
-    backgroundColor: "#E7EAEA",
-    borderRadius: 40,
-    marginBottom: 8,
-  },
-  receiverImage: {
-    backgroundColor: "#E7EAEA",
-    width: 45,
-    height: 45,
-    borderRadius: 40,
-    marginBottom: 8,
-  },
-  senderNameContainer: {
-    position: "absolute",
-    top: 18,
-    right: 82,
-  },
-  senderName: {
-    color: "#333",
+  slogan: {
     fontSize: 12,
-    marginBottom: 8,
+    fontWeight: "bold",
+    color: "gray",
+    marginBottom: 10,
+    marginTop: 5,
   },
-  recieverNameContainer: {
-    position: "absolute",
-    top: 20,
-    right: 67,
+  heading: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#000",
   },
-  receiverName: {
-    color: "#333",
-    fontSize: 12,
-    marginBottom: 8,
+  todoList: {
+    flexGrow: 1,
+    marginTop: 16,
   },
-  senderMessageContainer: {
-    marginTop: 8,
-  },
-  receiverMessageContainer: {
-    marginTop: 8,
-  },
-  senderQuote: {
-    backgroundColor: "#EFEFEF",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 8,
-    alignSelf: "flex-start",
-    position: "relative",
-    marginLeft: 15,
-    paddingLeft: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: "#EFEFEF",
-    width: "100%",
-    textAlign: "justify",
-  },
-  receiverQuote: {
-    backgroundColor: "#EFEFEF",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 8,
-    alignSelf: "flex-start",
-    position: "relative",
-    marginLeft: 30,
-    paddingLeft: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: "#EFEFEF",
-    width: "100%",
-    textAlign: "justify",
-  },
-  receiverPointer: {
-    position: "absolute",
-    top: 4,
-    left: -7,
-    width: 0,
-    height: 0,
-    borderTopWidth: 7,
-    borderTopColor: "transparent",
-    borderRightWidth: 7,
-    borderRightColor: "#EFEFEF",
-    borderBottomWidth: 7,
-    borderBottomColor: "transparent",
-  },
-  senderMessageText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  receiverMessageText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  messageBoxContainer: {
+  todoItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingBottom: 8,
+    marginBottom: 8,
   },
-  messageBox: {
-    flex: 1,
-    height: 70,
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    marginRight: 5,
-    backgroundColor: "#fff",
-  },
-  sendButton: {
-    alignItems: "center", 
+    borderColor: "gray",
+    marginRight: 10,
     justifyContent: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    height: 50,
-    borderRadius: 10,
-    backgroundColor: "#075eec",
+    alignItems: "center",
+    marginLeft: 5,
   },
-  sendButtonText: {
-    color: "#fff",
+  checkmark: {
     fontSize: 16,
-    fontWeight: "bold",
+    color: "green",
+  },
+  todoTitle: {
+    fontSize: 16,
+    flex: 1,
+  },
+  editButton: {
+    marginLeft: 8,
+  },
+  deleteButton: {
+    marginLeft: 8,
+  },
+  editTodoInput: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    marginTop: 16,
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  addButton: {
+    marginLeft: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#075eec",
+    borderRadius: 8,
+    paddingHorizontal: 16,
   },
 });
-
 export default Messages;

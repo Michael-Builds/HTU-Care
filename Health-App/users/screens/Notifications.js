@@ -6,6 +6,7 @@ import {
   StatusBar,
   SafeAreaView,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import CustomDrawer from "../navigators/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
@@ -16,6 +17,7 @@ const Notifications = () => {
   const [status, setStatus] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
   const [acceptanceInfo, setAcceptanceInfo] = useState("");
+  const [appointmentDetails, setAppointmentDetails] = useState([]);
 
   useEffect(() => {
     fetchAppointmentStatus();
@@ -27,6 +29,7 @@ const Notifications = () => {
         "http://192.168.43.237:4000/appointments"
       );
       const appointmentDetails = response.data;
+      setAppointmentDetails(appointmentDetails);
 
       if (appointmentDetails.length > 0) {
         const appointmentId = appointmentDetails[0]._id;
@@ -65,14 +68,21 @@ const Notifications = () => {
         navigation={navigation}
       />
       <View style={styles.container}>
-        <Text>Status: {status}</Text>
+      <Text style={styles.title}>Appointments</Text>
+        {appointmentDetails.length === 0 ? (
+          <Text>No message yet</Text>
+        ) : (
+          <>
+            <Text>Status: {status}</Text>
 
-        {status === "Appointment rejected" && (
-          <Text>Rejection Reason: {rejectionReason}</Text>
-        )}
+            {status === "Appointment rejected" && (
+              <Text>Rejection Reason: {rejectionReason}</Text>
+            )}
 
-        {status === "Appointment accepted" && (
-          <Text>Acceptance Information: {acceptanceInfo}</Text>
+            {status === "Appointment accepted" && (
+              <Text>Acceptance Information: {acceptanceInfo}</Text>
+            )}
+          </>
         )}
       </View>
     </SafeAreaView>

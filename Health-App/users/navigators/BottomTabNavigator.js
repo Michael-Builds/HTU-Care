@@ -13,7 +13,7 @@ const Tab = createBottomTabNavigator();
 const home = "Home";
 const appointments = "Appointments";
 const notification = "Notification";
-const message = "Message";
+const clipboard = "Notes";
 
 const BottomTabNavigator = () => {
   const navigation = useNavigation();
@@ -66,8 +66,8 @@ const BottomTabNavigator = () => {
             iconName = focused ? "home" : "home-outline";
           } else if (rn === appointments) {
             iconName = focused ? "calendar" : "calendar-outline";
-          } else if (rn === message) {
-            iconName = focused ? "chatbubble" : "chatbubble-ellipses-outline";
+          } else if (rn === clipboard) {
+            iconName = focused ? "clipboard" : "clipboard-outline";
             return (
               <View>
                 <Ionicons name={iconName} size={size} color={color} />
@@ -101,17 +101,8 @@ const BottomTabNavigator = () => {
     >
       <Tab.Screen name={home} component={HomeStack} />
       <Tab.Screen name={appointments} component={AppointmentStack} />
-      <Tab.Screen name={message} component={MessageStack} />
-      <Tab.Screen
-        name={notification}
-        component={NotificationStack}
-        listeners={({ navigation }) => ({
-          focus: () => {
-            // Fetch notification counts when the NotificationStack screen is focused
-            setNotificationCount();
-          },
-        })}
-      />
+      <Tab.Screen name={clipboard} component={MessageStack} />
+      <Tab.Screen name={notification} component={NotificationStack} />
     </Tab.Navigator>
   );
 };
