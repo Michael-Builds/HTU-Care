@@ -132,8 +132,8 @@ const Messages = () => {
           <Animatable.Text
             ref={headingRef}
             style={styles.heading}
-            animation="bounceIn"
-            duration={1000}
+            // animation="bounceIn"
+            // duration={1000}
           >
             Todo List
           </Animatable.Text>
@@ -182,16 +182,16 @@ const styles = StyleSheet.create({
     tintColor: "#fff",
   },
   slogan: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "bold",
     color: "gray",
     marginBottom: 10,
     marginTop: 5,
   },
   heading: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#000",
+    fontSize: 26,
+    fontWeight: "700",
+    color: "gray",
   },
   todoList: {
     flexGrow: 1,

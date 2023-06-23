@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  SafeAreaView,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet, StatusBar, SafeAreaView } from "react-native";
 import CustomDrawer from "../navigators/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
@@ -35,19 +27,17 @@ const Notifications = () => {
         const appointmentId = appointmentDetails[0]._id;
 
         const statusResponse = await axios.get(
-          `http://192.168.43.237:4000/appointments/${appointmentId}/status`
+          `http://192.168.43.237:4000/appointments/${appointmentId}`
         );
-        console.log("statusResponse:", statusResponse.data);
-        console.log("status:", status);
 
-        setStatus(statusResponse.data.message);
-
-        if (statusResponse.data.rejectReason) {
-          setRejectionReason(statusResponse.data.rejectReason);
-        }
-
-        if (statusResponse.data.acceptInfo) {
-          setAcceptanceInfo(statusResponse.data.acceptInfo);
+        if (statusResponse.data.status === "rejected") {
+          setStatus("Appointment rejected");
+          setRejectionReason(statusResponse.data.appointment.rejectReason);
+        } else if (statusResponse.data.status === "accepted") {
+          setStatus("Appointment accepted");
+          setAcceptanceInfo(statusResponse.data.appointment.acceptInfo);
+        } else {
+          setStatus("Appointment pending");
         }
       }
     } catch (error) {
@@ -68,9 +58,9 @@ const Notifications = () => {
         navigation={navigation}
       />
       <View style={styles.container}>
-      <Text style={styles.title}>Appointments</Text>
+        <Text style={styles.title}>Appointments</Text>
         {appointmentDetails.length === 0 ? (
-          <Text>No message yet</Text>
+          <Text>Pending Approval...</Text>
         ) : (
           <>
             <Text>Status: {status}</Text>
@@ -94,6 +84,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
 });
 

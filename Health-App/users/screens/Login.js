@@ -102,7 +102,7 @@ const Login = () => {
           </Text>
 
           <Text style={styles.subtitle}>
-            Get access to your portfolio and more
+            Nurture Your Health, Boost Productivity
           </Text>
         </View>
 
@@ -168,7 +168,7 @@ const Login = () => {
               </View>
             </TouchableOpacity>
           </View>
-     
+
           <View
             style={{
               flexDirection: "row",

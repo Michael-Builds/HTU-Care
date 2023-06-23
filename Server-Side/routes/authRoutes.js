@@ -23,7 +23,7 @@ router.post("/signup", async (req, res) => {
     if (existingUser) {
       return res.status(422).send("User already exists");
     }
-    const user = new User({ username, email, password});
+    const user = new User({ username, email, password });
     await user.save();
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
@@ -160,9 +160,8 @@ router.patch("/users/:id", upload.single("image"), async (req, res) => {
 
     res.json({ message: "User details updated successfully" });
   } catch (error) {
-    
-     // Handle errors related to file uploads
-     if (error.code === "LIMIT_FILE_SIZE") {
+    // Handle errors related to file uploads
+    if (error.code === "LIMIT_FILE_SIZE") {
       return res.status(400).json({ error: "File size too large" });
     }
     res.status(500).json({ error: "Failed to update user details" });
@@ -189,6 +188,5 @@ router.get("/users/:id", async (req, res, next) => {
     return res.status(500).json({ error: "Failed to fetch user details" });
   }
 });
-
 
 module.exports = router;

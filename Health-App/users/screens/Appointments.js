@@ -69,7 +69,7 @@ const Appointment = () => {
 
   const buttonScale = buttonAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.8, 1],
+    outputRange: [0.9, 1],
   });
 
   return (
@@ -126,16 +126,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 8,
+    color: "gray",
   },
   specialty: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 22,
+    fontSize: 14,
+    color: "gray",
+    marginBottom: 20,
   },
   button: {
     backgroundColor: "#007bff",
     padding: 8,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   buttonText: {
     color: "#fff",

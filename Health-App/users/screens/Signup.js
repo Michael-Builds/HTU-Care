@@ -141,7 +141,7 @@ const SignUp = () => {
             </Text>
 
             <Text style={styles.subtitle}>
-              Get access to your portfolio and more
+              Nurture Your Health, Boost Productivity
             </Text>
           </View>
 

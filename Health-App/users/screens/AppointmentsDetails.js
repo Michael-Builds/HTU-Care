@@ -137,7 +137,7 @@ const AppointmentsDetails = () => {
             Book <Text style={{ color: "#075eec" }}>Appointments</Text>
           </Text>
           <Text style={styles.subtitle}>
-            Get access to your portfolio and more
+            Nurture Your Health, Boost Productivity
           </Text>
         </View>
         <View style={styles.inputContainer}>
@@ -224,6 +224,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginBottom: 25,
     borderRadius: 30,
+  },
+  subtitle: {
+    color: "gray",
+    fontSize: 14,
   },
   title: {
     fontSize: 21,

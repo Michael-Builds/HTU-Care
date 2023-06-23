@@ -29,44 +29,45 @@ const Update = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [userId, setUserId] = useState(null); // Added state for user ID
 
-
-//handle click for image upload
-const handleImageUpload = async () => {
-  try {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      throw new Error("Permission to access media library was denied");
-    }
-
-    const pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!pickerResult.canceled && pickerResult.assets.length > 0) {
-      setSelectedImage(pickerResult.assets[0].uri); // Update the URI assignment
-    }
-  } catch (error) {
-    console.error("Failed to upload image:", error);
-  }
-};
-
-
-useEffect(() => {
-  const fetchUserId = async () => {
+  //handle click for image upload
+  const handleImageUpload = async () => {
     try {
-      const response = await axios.get(`http://192.168.43.237:4000/users/${userId}`);
-      const user = response.data;
-      setUserId(user._id);
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        throw new Error("Permission to access media library was denied");
+      }
+
+      const pickerResult = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      if (!pickerResult.canceled && pickerResult.assets.length > 0) {
+        setSelectedImage(pickerResult.assets[0].uri); // Update the URI assignment
+      }
     } catch (error) {
-      console.log("Error: Failed to fetch user ID.", error);
+      console.error("Failed to upload image:", error);
     }
   };
 
-  fetchUserId();
-}, []);
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const response = await axios.get(
+          `http://192.168.43.237:4000/users/${userId}`
+        );
+        const user = response.data;
+        setUserId(user._id);
+      } catch (error) {
+        console.log("Error: Failed to fetch user ID.", error);
+      }
+    };
+
+    fetchUserId();
+  }, []);
 
   //handle click for submitting the form
   const handleSubmit = async () => {
@@ -76,7 +77,6 @@ useEffect(() => {
     }
     setLoading(true);
     try {
-
       const payload = new FormData();
       if (newUsername) payload.append("username", newUsername);
       if (newEmail) payload.append("email", newEmail);
@@ -126,7 +126,7 @@ useEffect(() => {
               Update <Text style={{ color: "#075eec" }}>Profile</Text>
             </Text>
             <Text style={styles.subtitle}>
-              Get access to your portfolio and more
+              Nurture Your Health, Boost Productivity
             </Text>
           </View>
           <View style={styles.form}>
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "500",
     color: "#929292",
     textAlign: "center",

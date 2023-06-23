@@ -167,7 +167,7 @@ const HealthRecords = () => {
             Health <Text style={{ color: "#075eec" }}>Records</Text>
           </Text>
           <Text style={styles.subtitle}>
-            Get access to your portfolio and more
+            Nurture Your Health, Boost Productivity
           </Text>
         </View>
         <View style={styles.inputContainer}>
@@ -265,6 +265,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#1d1d1d",
     marginBottom: 8,
+    textAlign: "center",
+  },
+  subtitle: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#929292",
     textAlign: "center",
   },
   loaderContainer: {

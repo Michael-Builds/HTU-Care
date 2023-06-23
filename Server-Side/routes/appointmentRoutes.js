@@ -6,6 +6,7 @@ const AcceptedAppointment = require("../models/AcceptedAppointment");
 const User = require("../models/User");
 const moment = require("moment");
 
+
 // Endpoint for uploading the appointments of a user into our database
 router.post("/appointments", async (req, res) => {
   try {
@@ -77,6 +78,19 @@ router.post("/appointments", async (req, res) => {
   }
 });
 
+
+// Endpoint for retrieving appointment details
+router.get("/appointments", async (req, res) => {
+  try {
+    const appointmentDetails = await Appointment.find();
+    res.json(appointmentDetails);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch appointment details" });
+  }
+});
+
+
 //Endpoint for posting the rejection of appointment
 router.post("/appointments/reject", async (req, res) => {
   try {
@@ -114,7 +128,7 @@ router.post("/appointments/reject", async (req, res) => {
     await rejectedAppointment.save();
 
     // Remove the appointment from the appointment collection
-    // await Appointment.findByIdAndRemove(appointment._id);
+    await Appointment.findByIdAndRemove(appointment._id);
 
     // Log the rejection
     console.log(`Appointment ${appointment._id} rejected`);
@@ -135,6 +149,7 @@ router.post("/appointments/reject", async (req, res) => {
       .json({ error: "An error occurred while rejecting the appointment" });
   }
 });
+
 
 //Endpoint for the Appointment Acceptance
 router.post("/appointments/accept", async (req, res) => {
@@ -173,7 +188,7 @@ router.post("/appointments/accept", async (req, res) => {
     await acceptedAppointment.save();
 
     //Remove the appointment from the appointment collection
-    // await Appointment.findByIdAndRemove(appointment._id);
+    await Appointment.findByIdAndRemove(appointment._id);
 
     //Log the acceptance
     console.log(`Appointment ${appointment._id} accepted`);
@@ -217,63 +232,6 @@ router.get("/acceptedappointments/count", async (req, res) => {
   }
 });
 
-// Endpoint for determining the acceptance or rejection of an appointment
-router.get("/appointments/:id/status", async (req, res) => {
-  try {
-    const appointmentId = req.params.id;
-
-    // Find the appointment in the database based on the appointment ID
-    const appointment = await Appointment.findOne({ id: appointmentId });
-
-    if (!appointment) {
-      return res.status(404).json({ error: "Appointment not found" });
-    }
-
-    // Check if the appointment has been accepted
-    const acceptedAppointment = await AcceptedAppointment.findOne({
-      appointment: appointment._id,
-    });
-
-    if (acceptedAppointment) {
-      return res.status(200).json({
-        message: "Appointment accepted",
-        acceptInfo: acceptedAppointment.acceptInfo,
-      });
-    }
-
-    // Check if the appointment has been rejected
-    const rejectedAppointment = await RejectedAppointment.findOne({
-      appointment: appointment._id,
-    });
-
-    if (rejectedAppointment) {
-      return res.status(200).json({
-        message: "Appointment rejected",
-        rejectReason: rejectedAppointment.rejectReason,
-      });
-    }
-
-    // If the appointment is neither accepted nor rejected, return a message
-    res.status(200).json({ message: "Appointment pending" });
-  } catch (error) {
-    console.error(
-      "An error occurred while determining appointment status:",
-      error
-    );
-    res.status(500).json({ error: "Failed to determine appointment status" });
-  }
-});
-
-// Endpoint for retrieving appointment details
-router.get("/appointments", async (req, res) => {
-  try {
-    const appointmentDetails = await Appointment.find();
-    res.json(appointmentDetails);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to fetch appointment details" });
-  }
-});
 
 // Endpoint to get the count of appointments
 router.get("/appointments/count", async (req, res) => {
@@ -285,6 +243,47 @@ router.get("/appointments/count", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to get appointment count" });
+  }
+});
+
+
+// Endpoint for retrieving appointment details and returning to the user
+router.get("/appointments/:id", async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+
+    // Find the appointment in the database based on the appointment ID
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found" });
+    }
+
+    // Check if the appointment is rejected
+    const rejectedAppointment = await RejectedAppointment.findOne({
+      appointment: appointment._id,
+    });
+
+    if (rejectedAppointment) {
+      // Appointment is rejected
+      return res.status(200).json({ status: "rejected", appointment: rejectedAppointment });
+    }
+
+    // Check if the appointment is accepted
+    const acceptedAppointment = await AcceptedAppointment.findOne({
+      appointment: appointment._id,
+    });
+
+    if (acceptedAppointment) {
+      // Appointment is accepted
+      return res.status(200).json({ status: "accepted", appointment: acceptedAppointment });
+    }
+
+    // Appointment is neither rejected nor accepted
+    res.status(200).json({ status: "pending", appointment });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch appointment details" });
   }
 });
 

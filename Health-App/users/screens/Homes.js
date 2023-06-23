@@ -51,24 +51,24 @@ const Home = () => {
       name: "Lufart",
       status: 12,
       image: cycle,
-      lightColor: "#f8e4d9",
-      color: "#fcf1ea",
+      lightColor: "#f5d6c1",
+      color: "#fae9de",
       darkColor: "#fac5a4",
     },
     {
       name: "Gebedol",
       status: 52,
       image: walk,
-      lightColor: "#d7f0f7",
-      color: "#e8f7fc",
+      lightColor: "#bae1f5",
+      color: "#dceef7",
       darkColor: "#aceafc",
     },
     {
       name: "Citro-C",
       status: 79,
       image: yoga,
-      lightColor: "#dad5fe",
-      color: "#e7e3ff",
+      lightColor: "#c4bcf5",
+      color: "#dad5f7",
       darkColor: "#8860a2",
     },
   ];
@@ -76,7 +76,6 @@ const Home = () => {
   // Card for displaying activities
   const Card = ({ data, index }) => {
     return (
-
       <View
         style={{
           flex: 1,
@@ -165,7 +164,6 @@ const Home = () => {
       <CustomDrawer title="Home" isHome={true} navigation={navigation} />
 
       {/* Banner images and container */}
-
       <View
         style={{
           padding: 20,
@@ -181,15 +179,15 @@ const Home = () => {
             <View style={styles.rowLabel}>
               <View style={styles.fireContainer}>
                 <Image
-                  source={require("../../assets/images/fire.png")}
+                  source={require("../../assets/images/meditate.png")}
                   resizeMode="contain"
                   style={styles.fireImage}
                 />
               </View>
-              <Text style={styles.offer}>Limited offer</Text>
+              <Text style={styles.offer}>Revitalize.Transform</Text>
             </View>
-            <Text style={styles.offerText}>30% Discount</Text>
-            <Text style={styles.offerText}>Flash Sales</Text>
+            <Text style={styles.offerText}>Unlock Your Wellness</Text>
+            <Text style={styles.offerText}>Health Boost!</Text>
           </View>
         </ImageBackground>
         <Image
@@ -204,9 +202,9 @@ const Home = () => {
         <Text
           style={{
             fontWeight: "bold",
-            color: "#333",
-            marginTop: 5,
-            marginLeft: 10,
+            color: "gray",
+            marginLeft: 5,
+            fontSize: 13.5,
           }}
         >
           Your Prescriptions
@@ -223,14 +221,14 @@ const Home = () => {
           <Text
             style={{
               fontWeight: "bold",
-              color: "#333",
-              marginTop: 5,
-              marginLeft: 10,
+              color: "gray",
+              marginTop: -5,
+              marginLeft: 5,
+              fontSize: 13.5,
             }}
           >
             Health Tips
           </Text>
-
           <View
             style={{
               flexDirection: "row",
@@ -238,32 +236,42 @@ const Home = () => {
               alignItems: "flex-start",
               marginTop: 15,
               paddingHorizontal: 10,
-              backgroundColor: "#E7EAEA",
+              backgroundColor: "#d0e9f5",
               height: 165,
               borderRadius: 15,
               flexWrap: "wrap",
+              shadowColor: "#000",
+              shadowOpacity: 0.3,
+              shadowOffset: {
+                width: 0,
+                height: 1,
+              },
+              shadowRadius: 4,
+              elevation: 5,
             }}
           >
             <Image
               source={require("../../assets/images/nurse.png")}
               style={{
-                width: 50,
-                height: 50,
-                marginLeft: 10,
+                width: 45,
+                height: 45,
                 borderRadius: 50,
                 backgroundColor: "#c5c5c5",
-                marginTop: 10,
                 marginBottom: 10,
+                position: "absolute",
+                top: 12,
+                left: 12,
               }}
             />
-            <View>
+            <View style={{ marginLeft: -5, marginTop: 65 }}>
               <Text
                 style={{
                   fontWeight: "bold",
                   marginBottom: 8,
                   fontSize: 14,
-                  color: "#333",
+                  color: "#5c5c5c",
                   marginLeft: 10,
+                  marginTop: 5,
                 }}
               >
                 {healthTip.author}
@@ -271,7 +279,8 @@ const Home = () => {
               <Text
                 style={{
                   flex: 1,
-                  marginLeft: 5,
+                  marginLeft: 10,
+                  fontSize: 13,
                 }}
               >
                 {healthTip.text}
@@ -279,7 +288,6 @@ const Home = () => {
             </View>
           </View>
         </View>
-
       </View>
     </View>
   );
@@ -305,28 +313,30 @@ const styles = StyleSheet.create({
   rowLabel: {
     flexDirection: "row",
     alignItems: "center",
+    marginLeft: -15,
+    marginBottom: 5,
   },
   fireContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
   fireImage: {
-    height: 15,
-    width: 15,
+    height: 20,
+    width: 20,
     alignSelf: "center",
     margin: 5,
   },
   offer: {
     color: "white",
-    fontSize: 10,
+    fontSize: 11,
   },
   offerText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 14,
   },
   model: {
     position: "absolute",
-    right: 14,
+    right: 20,
     bottom: 0,
     zIndex: 10,
     height: "100%",

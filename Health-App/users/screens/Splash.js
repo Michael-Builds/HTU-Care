@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     textAlign: "center",
-    fontSize: 15,
+    fontSize: 14,
     color: "#333",
     fontStyle: "italic",
     paddingHorizontal: 20,

@@ -217,6 +217,7 @@ const Login = () => {
                   fontSize: 16,
                   textAlign: "center",
                   letterSpacing: 0.15,
+                  marginLeft: 5,
                 }}
               >
                 Sign up
