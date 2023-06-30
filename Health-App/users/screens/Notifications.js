@@ -6,36 +6,38 @@ import axios from "axios";
 
 const Notifications = () => {
   const navigation = useNavigation();
+  const [status, setStatus] = useState("");
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [acceptanceInfo, setAcceptanceInfo] = useState("");
   const [appointmentDetails, setAppointmentDetails] = useState([]);
 
   useEffect(() => {
-    fetchAppointmentDetails();
+    fetchAppointmentStatus();
   }, []);
 
-  const fetchAppointmentDetails = async () => {
+  const fetchAppointmentStatus = async () => {
     try {
-      const response = await axios.get("http://192.168.43.237:4000/appointments");
+      const response = await axios.get(
+        "http://192.168.43.237:4000/appointments"
+      );
       const appointmentDetails = response.data;
-      console.log("Appointment Details:", appointmentDetails);
       setAppointmentDetails(appointmentDetails);
 
       if (appointmentDetails.length > 0) {
         const appointmentId = appointmentDetails[0]._id;
-        console.log("Appointment ID:", appointmentId);
 
         const statusResponse = await axios.get(
           `http://192.168.43.237:4000/appointments/${appointmentId}`
         );
-        console.log("Status Response:", statusResponse.data);
 
         if (statusResponse.data.status === "rejected") {
-          console.log("Appointment rejected");
-          console.log("Rejection Reason:", statusResponse.data.appointment.rejectReason);
+          setStatus("Appointment rejected");
+          setRejectionReason(statusResponse.data.appointment.rejectReason);
         } else if (statusResponse.data.status === "accepted") {
-          console.log("Appointment accepted");
-          console.log("Acceptance Information:", statusResponse.data.appointment.acceptInfo);
+          setStatus("Appointment accepted");
+          setAcceptanceInfo(statusResponse.data.appointment.acceptInfo);
         } else {
-          console.log("Appointment pending");
+          setStatus("Appointment pending");
         }
       }
     } catch (error) {
@@ -43,7 +45,6 @@ const Notifications = () => {
     }
   };
 
-  
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar
@@ -62,12 +63,15 @@ const Notifications = () => {
           <Text>Pending Approval...</Text>
         ) : (
           <>
-            {appointmentDetails.map((appointment) => (
-              <View key={appointment._id} style={styles.appointmentContainer}>
-                <Text>Appointment ID: {appointment._id}</Text>
-                <Text>Status: {appointment.status}</Text>
-              </View>
-            ))}
+            <Text>Status: {status}</Text>
+
+            {status === "Appointment rejected" && (
+              <Text>Rejection Reason: {rejectionReason}</Text>
+            )}
+
+            {status === "Appointment accepted" && (
+              <Text>Acceptance Information: {acceptanceInfo}</Text>
+            )}
           </>
         )}
       </View>
@@ -85,9 +89,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
-  },
-  appointmentContainer: {
-    marginBottom: 20,
   },
 });
 
