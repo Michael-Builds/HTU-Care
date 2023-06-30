@@ -43,6 +43,7 @@ const Notifications = () => {
     }
   };
 
+  
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar
