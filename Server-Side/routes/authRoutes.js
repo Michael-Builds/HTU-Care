@@ -34,24 +34,27 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-//Pull Request for login
+
+// Pull Request for login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(422).send({ error: "Email and password are required." });
   }
 
-  //find the user based on their email
+  // Find the user based on their email
   const user = await User.findOne({ email });
-  //if error or no user, it returns an error
+
+  // If error or no user, return an error
   if (!user) {
-    return res
-      .status(422)
-      .send({ error: "User with that email does not exist." });
+    return res.status(422).send({ error: "User with that email does not exist." });
   }
 
   try {
-    await user.comparePassword(password);
+    const isPasswordCorrect = await user.comparePassword(password);
+    if (!isPasswordCorrect) {
+      return res.status(422).send({ error: "Invalid password" });
+    }
 
     const token = jwt.sign(
       { userId: user._id, role: user.role, email: user.email },
@@ -59,9 +62,10 @@ router.post("/login", async (req, res) => {
     );
     res.send({ token });
   } catch (err) {
-    return res.status(422).send({ error: "Invalid password" });
+    return res.status(500).send({ error: "An error occurred while processing the request." });
   }
 });
+
 
 //Endpoint for user role
 router.get("/user-role", async (req, res) => {

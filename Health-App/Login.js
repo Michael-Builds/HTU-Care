@@ -16,6 +16,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
+
+
 const Login = () => {
   const navigation = useNavigation();
 
@@ -24,12 +26,13 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+
   // Signup Screen Redirection
   const handleSignUp = () => {
     navigation.navigate("Signup");
   };
 
-  // Handling the Login Logic and it's authentications
+  // Handling the Login Logic and its authentications
   handleSubmit = () => {
     // Email Validity
     const isEmailValid = (email) => {
@@ -63,7 +66,8 @@ const Login = () => {
         if (res.ok) {
           return res.json();
         } else if (res.status === 422) {
-          throw new Error("User with that email does not exist.");
+          Alert.alert("Invalid Password", "Please enter a correct password");
+          throw new Error("Invalid password");
         } else {
           throw new Error("Login failed. Please try again.");
         }
