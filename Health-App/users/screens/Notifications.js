@@ -55,7 +55,7 @@ const Notifications = () => {
             "http://192.168.43.237:4000/prescriptions"
           );
           const prescriptionData = response.data.prescriptions;
-          setPrescriptions(prescriptionData);
+          setPrescriptions(prescriptionData.map((prescription) => prescription.prescription));
         } else {
           setStatus("Appointment pending");
         }
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   prescriptionContainer: {
-    marginBottom: 10,
+    marginBottom: 110,
   },
   statusText: {
     fontSize: 16,
