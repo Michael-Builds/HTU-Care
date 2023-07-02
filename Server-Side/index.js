@@ -19,12 +19,14 @@ const authRoutes = require("./routes/authRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const healthRecordsRouter = require("./routes/healthRecords");
 const prescriptionRouter = require("./routes/prescriptionRoutes");
+// const dcprescriptionsRoutes = require("./routes/dcprescriptionsRoutes");
 
 app.use(bodyParser.json());
 app.use(authRoutes);
 app.use(appointmentRoutes);
 app.use(healthRecordsRouter);
 app.use(prescriptionRouter);
+// app.use(dcprescriptionsRoutes);
 
 //Pull request
 app.get("/", requireToken, (req, res) => {

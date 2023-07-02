@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -14,19 +14,28 @@ import {
   Platform,
 } from "react-native";
 import axios from "axios";
-import CustomDrawer from "../navigators/CustomDrawer";
+import CustomDrawer from "../navigations/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Prescriptions = () => {
+const Prescription = () => {
   const navigation = useNavigation();
 
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("Loading");
+  const [selectedUser, setSelectedUser] = useState("");
+  const [users, setUsers] = useState([]);
+  const [patientAge, setPatientAge] = useState("");
+  const [doctorName, setDoctorName] = useState("");
   const [drugname, setDrugName] = useState("");
   const [prescriptiondate, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [durationDays, setDurationDays] = useState("");
   const [timeinterval, setTimeInterval] = useState("");
   const [timesPerDay, setTimesPerDay] = useState("");
+  const [additionalnotes, setAdditionalNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleDateChange = (_, selectedDate) => {
@@ -40,12 +49,57 @@ const Prescriptions = () => {
     return date.toLocaleDateString();
   };
 
+  useEffect(() => {
+    // Fetch the list of users with the role "user" from the backend
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(
+          "http://192.168.43.237:4000/admin/dashboard"
+        );
+        const users = response.data.users;
+        setUsers(users);
+
+        // Find the user with the role "doctor"
+        const doctorUser = users.find((user) => user.role === "doctor");
+        if (doctorUser) {
+          setDoctorName(doctorUser.username);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  // Users data callback API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        const response = await fetch("http://192.168.43.237:4000/", {
+          headers: new Headers({
+            Authorization: "Bearer " + token,
+          }),
+        });
+        const data = await response.json();
+        console.log(data);
+        setUsername(data.username);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
   const handleSubmit = async () => {
     try {
       setLoading(true);
 
       // Input validation
       if (
+        !selectedUser ||
+        !patientAge ||
         !drugname ||
         !prescriptiondate ||
         !durationDays ||
@@ -56,14 +110,26 @@ const Prescriptions = () => {
         return Alert.alert("Error", "All fields are required.");
       }
 
+      if (Number(patientAge) <= 0) {
+        setLoading(false);
+        return Alert.alert(
+          "Error",
+          "Invalid age. Age must be a positive number."
+        );
+      }
+
       const formattedDate = formatLocalDate(prescriptiondate);
       // Create the prescription object
       const prescriptionData = {
+        selectedUser,
+        patientAge: Number(patientAge),
+        doctorName,
         drugname,
         prescriptiondate: formattedDate,
         durationDays,
         timeinterval,
         timesPerDay,
+        additionalnotes,
       };
 
       // Send the prescription data to the backend API
@@ -76,12 +142,10 @@ const Prescriptions = () => {
       if (response.status === 201) {
         Alert.alert("Success", "Prescription uploaded successfully.");
         // Navigate back to the appointments screen
-        navigation.navigate("Homes");
+        navigation.navigate("Home");
         // Reset the form fields
-        setFullName("");
+        setSelectedUser("");
         setPatientAge("");
-        setContact("");
-        setAddress("");
         setDoctorName("");
         setDrugName("");
         setDate(new Date());
@@ -130,13 +194,57 @@ const Prescriptions = () => {
             source={require("../../assets/images/Prescription.jpg")}
           />
           <Text style={styles.title}>
-            Track Your <Text style={{ color: "#075eec" }}>Prescriptions</Text>
+            Upload <Text style={{ color: "#075eec" }}>Prescriptions</Text>
           </Text>
           <Text style={styles.subtitle}>
             Nurture Your Health, Boost Productivity
           </Text>
         </View>
         <View style={styles.inputContainer}>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedUser}
+              onValueChange={(itemValue) => setSelectedUser(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select a User" value="" />
+              {users.map((user) => (
+                <Picker.Item
+                  key={user._id}
+                  value={user._id}
+                  label={user.username}
+                />
+              ))}
+            </Picker>
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Patient Age"
+            value={patientAge}
+            onChangeText={(text) => setPatientAge(text)}
+            keyboardType="numeric"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder={`Dr. ${username}`}
+            autoCapitalize="words"
+            value={doctorName}
+            onChangeText={(text) => setDoctorName(text)}
+            editable={false}
+          />
+          <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+            <Text style={styles.dateInput}>
+              {prescriptiondate.toLocaleDateString()}
+            </Text>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+              value={prescriptiondate}
+              placeholder="Prescription Date"
+              mode="date"
+              onChange={handleDateChange}
+            />
+          )}
           <TextInput
             style={styles.input}
             placeholder="Drug Name"
@@ -165,19 +273,15 @@ const Prescriptions = () => {
             keyboardType="numeric"
             onChangeText={(text) => setTimeInterval(text)}
           />
-          <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-            <Text style={styles.dateInput}>
-              {prescriptiondate.toLocaleDateString()}
-            </Text>
-          </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              value={prescriptiondate}
-              placeholder="Prescription Date"
-              mode="date"
-              onChange={handleDateChange}
-            />
-          )}
+
+          <TextInput
+            style={styles.conditionInput}
+            placeholder="Additional Notes"
+            multiline
+            numberOfLines={4}
+            value={additionalnotes}
+            onChangeText={(text) => setAdditionalNotes(text)}
+          />
 
           <View style={styles.formAction}>
             <TouchableOpacity
@@ -253,6 +357,35 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginBottom: 20,
   },
+  timeInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginBottom: 20,
+  },
+  conditionInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginBottom: 20,
+    height: 100,
+    textAlignVertical: "top",
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+    color: "#000",
+  },
   formAction: {
     marginVertical: 24,
     marginTop: 5,
@@ -282,4 +415,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Prescriptions;
+export default Prescription;

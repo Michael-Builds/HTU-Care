@@ -6,7 +6,6 @@ const AcceptedAppointment = require("../models/AcceptedAppointment");
 const User = require("../models/User");
 const moment = require("moment");
 
-
 // Endpoint for uploading the appointments of a user into our database
 router.post("/appointments", async (req, res) => {
   try {
@@ -78,7 +77,6 @@ router.post("/appointments", async (req, res) => {
   }
 });
 
-
 // Endpoint for retrieving appointment details
 router.get("/appointments", async (req, res) => {
   try {
@@ -89,7 +87,6 @@ router.get("/appointments", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch appointment details" });
   }
 });
-
 
 //Endpoint for posting the rejection of appointment
 router.post("/appointments/reject", async (req, res) => {
@@ -150,7 +147,6 @@ router.post("/appointments/reject", async (req, res) => {
   }
 });
 
-
 //Endpoint for the Appointment Acceptance
 router.post("/appointments/accept", async (req, res) => {
   try {
@@ -210,7 +206,6 @@ router.post("/appointments/accept", async (req, res) => {
   }
 });
 
-
 // Endpoint to count the number of appointments in the rejectedappointment database
 router.get("/rejectedappointments/count", async (req, res) => {
   try {
@@ -221,7 +216,6 @@ router.get("/rejectedappointments/count", async (req, res) => {
   }
 });
 
-
 //Endpoint to count the number of appointments in the acceptedappointment collection
 router.get("/acceptedappointments/count", async (req, res) => {
   try {
@@ -231,7 +225,6 @@ router.get("/acceptedappointments/count", async (req, res) => {
     res.status(500).json({ error: "Error counting appointments" });
   }
 });
-
 
 // Endpoint to get the count of appointments
 router.get("/appointments/count", async (req, res) => {
@@ -245,7 +238,6 @@ router.get("/appointments/count", async (req, res) => {
     res.status(500).json({ error: "Failed to get appointment count" });
   }
 });
-
 
 // Endpoint for retrieving appointment details and returning to the user
 router.get("/appointments/:id", async (req, res) => {
@@ -266,7 +258,9 @@ router.get("/appointments/:id", async (req, res) => {
 
     if (rejectedAppointment) {
       // Appointment is rejected
-      return res.status(200).json({ status: "rejected", appointment: rejectedAppointment });
+      return res
+        .status(200)
+        .json({ status: "rejected", appointment: rejectedAppointment });
     }
 
     // Check if the appointment is accepted
@@ -276,7 +270,9 @@ router.get("/appointments/:id", async (req, res) => {
 
     if (acceptedAppointment) {
       // Appointment is accepted
-      return res.status(200).json({ status: "accepted", appointment: acceptedAppointment });
+      return res
+        .status(200)
+        .json({ status: "accepted", appointment: acceptedAppointment });
     }
 
     // Appointment is neither rejected nor accepted

@@ -98,7 +98,7 @@ const CustomDrawerContent = (props) => {
               color: "#333",
             }}
           >
-            {username}
+           {username}
           </Text>
           <Text
             style={{
@@ -372,7 +372,6 @@ const SideDrawer = () => {
       drawerContent={(props) => CustomDrawerContent(props)}
       initialRouteName="Menu"
     >
-
       <Drawer.Screen
         name="Menu"
         component={BottomTabNavigator}
@@ -408,7 +407,6 @@ const SideDrawer = () => {
         component={Logout}
         options={{ headerShown: false }}
       />
-
     </Drawer.Navigator>
   );
 };

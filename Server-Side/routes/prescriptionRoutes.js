@@ -1,15 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const Prescription = require("../models/Prescription");
+const User = require("../models/User");
 
 // Endpoint for saving prescription data
 router.post("/prescriptions", async (req, res) => {
   try {
     const {
-      fullName,
+      selectedUser,
       patientAge,
-      contact,
-      address,
       doctorName,
       drugname,
       prescriptiondate,
@@ -24,11 +23,8 @@ router.post("/prescriptions", async (req, res) => {
 
     // Input validation
     if (
-      !fullName ||
+      !selectedUser ||
       !patientAge ||
-      !contact ||
-      !address ||
-      !doctorName ||
       !drugname ||
       !prescriptiondate ||
       !durationDays ||
@@ -37,17 +33,6 @@ router.post("/prescriptions", async (req, res) => {
       !additionalnotes
     ) {
       return res.status(400).json({ error: "All fields are required." });
-    }
-
-    if (contact.length > 10) {
-      return res
-        .status(400)
-        .json({ error: "Contact number should be up to 10 characters." });
-    }
-    if (contact.length < 10) {
-      return res.status(400).json({
-        error: "Contact number should not be less than 10 characters",
-      });
     }
 
     if (patientAge <= 0) {
@@ -61,10 +46,8 @@ router.post("/prescriptions", async (req, res) => {
 
     // Create a new instance of the Prescription model
     const prescription = new Prescription({
-      fullName,
+      selectedUser,
       patientAge,
-      contact,
-      address,
       doctorName,
       drugname,
       prescriptiondate: formattedDate,
@@ -78,13 +61,10 @@ router.post("/prescriptions", async (req, res) => {
     // Save the prescription to the database
     await prescription.save();
 
-    //Format the prescription summary for thr user
-
-    const prescriptionSummary = `Prescription Destails:
-      Patient: ${fullName}
+    //Format the prescription summary for the user
+    const prescriptionSummary = `Prescription Details:
+      Patient: ${selectedUser}
       Age: ${patientAge}
-      Contact: ${contact}
-      Address: ${address}
       Doctor: ${doctorName}
       Drug Name: ${drugname}
       Prescription Date: ${formattedDate.toLocaleDateString()}
@@ -95,7 +75,7 @@ router.post("/prescriptions", async (req, res) => {
       `;
 
     res.status(201).json({
-      message: "Prescription uploaded Successfully",
+      message: "Prescription uploaded successfully",
       prescription: prescriptionSummary,
     });
   } catch (error) {
@@ -103,6 +83,77 @@ router.post("/prescriptions", async (req, res) => {
     res
       .status(500)
       .json({ error: "An error occurred while saving the prescription." });
+  }
+});
+
+// Endpoint to get all prescriptions
+router.get("/prescriptions", async (req, res) => {
+  const appointmentId = req.query.appointmentId;
+  try {
+    // Find prescriptions associated with the given appointment ID
+    const prescriptions = await Prescription.find({ appointmentId });
+
+    res.status(200).json({
+      message: "Prescriptions retrieved successfully",
+      prescriptions,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while retrieving the prescriptions." });
+  }
+});
+
+// Endpoint to send prescription to selected user
+router.post("/prescriptions/send", async (req, res) => {
+  const { prescriptionId, username } = req.body;
+
+  try {
+    // Find the prescription by ID
+    const prescription = await Prescription.findById(prescriptionId);
+
+    if (!prescription) {
+      return res.status(404).json({ error: "Prescription not found" });
+    }
+
+    // Find the user by username
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Send the prescription to the selected user
+    user.prescriptions.push(prescription);
+    await user.save();
+
+    res.status(200).json({ message: "Prescription sent successfully" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while sending the prescription" });
+  }
+});
+
+// Endpoint to count the number of appointments
+router.get("/appointments/count", async (req, res) => {
+  try {
+    // Count the number of appointments in the database
+    const count = await Appointment.countDocuments();
+
+    res.status(200).json({
+      message: "Appointment count retrieved successfully",
+      count,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        error: "An error occurred while retrieving the appointment count.",
+      });
   }
 });
 

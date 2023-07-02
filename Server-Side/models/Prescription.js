@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const prescriptionSchema = new mongoose.Schema(
   {
-    fullName: {
+    selectedUser: {
       type: String,
       required: true,
     },
@@ -10,17 +10,9 @@ const prescriptionSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    contact: {
-      type: String,
-      required: true,
-    },
-    address: {
-      type: String,
-      required: true,
-    },
     doctorName: {
       type: String,
-      required: true,
+      required: false,
     },
     drugname: {
       type: String,
@@ -52,3 +44,4 @@ const prescriptionSchema = new mongoose.Schema(
 const Prescription = mongoose.model("Prescription", prescriptionSchema);
 
 module.exports = Prescription;
+

@@ -5,15 +5,16 @@ import HomeStack from "../stack/HomeStack";
 import AppointmentStack from "../stack/AppointmentStack";
 import MessageStack from "../stack/MessageStack";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Prescription from "../pages/Prescriptions";
 
 const Tab = createBottomTabNavigator();
 
 const home = "House";
 const appointments = "Appointments";
 const message = "Chat";
+const prescription = "Prescription";
 
 const BottomTab = () => {
-  
   //useState for checking for new Appointments being booked by students to the doctor
   const [newAppointmentCount, setNewAppointmentCount] = useState(0);
 
@@ -72,6 +73,8 @@ const BottomTab = () => {
                 )}
               </View>
             );
+          } else if (rn === prescription) {
+            iconName = focused ? "medkit" : "medkit-outline";
           } else if (rn === message) {
             iconName = focused ? "chatbubbles" : "chatbubbles-outline";
             return (
@@ -89,6 +92,7 @@ const BottomTab = () => {
     >
       <Tab.Screen name={home} component={HomeStack} />
       <Tab.Screen name={appointments} component={AppointmentStack} />
+      <Tab.Screen name={prescription} component={Prescription} />
       <Tab.Screen name={message} component={MessageStack} />
     </Tab.Navigator>
   );

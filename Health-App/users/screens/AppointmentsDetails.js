@@ -154,6 +154,7 @@ const AppointmentsDetails = () => {
             value={email}
             onChangeText={(text) => setEmail(text)}
           />
+
           <TouchableOpacity onPress={() => setShowDatePicker(true)}>
             <Text style={styles.dateInput}>{date.toLocaleDateString()}</Text>
           </TouchableOpacity>
