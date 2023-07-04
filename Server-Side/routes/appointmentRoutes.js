@@ -91,7 +91,7 @@ router.get("/appointments", async (req, res) => {
 //Endpoint for posting the rejection of appointment
 router.post("/appointments/reject", async (req, res) => {
   try {
-    const { appointmentId, rejectReason } = req.body;
+    const { appointmentId, rejectReason, status } = req.body;
 
     // Validate input data
     if (!rejectReason) {
@@ -106,7 +106,7 @@ router.post("/appointments/reject", async (req, res) => {
     }
 
     // Update the appointment status to "rejected" or add a `rejected` field
-    appointment.status = "rejected";
+    appointment.status = status;
     await appointment.save();
 
     // Create a new rejected appointment instance
@@ -117,6 +117,7 @@ router.post("/appointments/reject", async (req, res) => {
       date: appointment.date,
       time: appointment.time,
       condition: appointment.condition,
+      status: appointment.status,
       rejectReason,
       rejectedOn: new Date(),
     });
@@ -150,7 +151,7 @@ router.post("/appointments/reject", async (req, res) => {
 //Endpoint for the Appointment Acceptance
 router.post("/appointments/accept", async (req, res) => {
   try {
-    const { appointmentId, acceptInfo } = req.body;
+    const { appointmentId, acceptInfo, status } = req.body;
 
     //Validate input data for acceptance
     if (!acceptInfo) {
@@ -165,7 +166,7 @@ router.post("/appointments/accept", async (req, res) => {
     }
 
     //Update the appointment status to "rejected" or add an "accepted" field
-    appointment.status = "accepted";
+    appointment.status = status;
     await appointment.save();
 
     //Createa new accepted appointments instance
@@ -176,6 +177,7 @@ router.post("/appointments/accept", async (req, res) => {
       date: appointment.date,
       time: appointment.time,
       condition: appointment.condition,
+      status: appointment.status,
       acceptInfo,
       acceptedOn: new Date(),
     });

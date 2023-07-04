@@ -52,10 +52,10 @@ const Notifications = () => {
           setAcceptanceInfo(statusResponse.data.appointment.acceptInfo);
 
           const response = await axios.get(
-            "http://192.168.43.237:4000/prescriptions"
+            `http://192.168.43.237:4000/prescriptions/${selectedUser}`
           );
           const prescriptionData = response.data.prescriptions;
-          setPrescriptions(prescriptionData.map((prescription) => prescription.prescription));
+          setPrescriptions(prescriptionData);
         } else {
           setStatus("Appointment pending");
         }
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   prescriptionContainer: {
-    marginBottom: 110,
+    marginBottom: 10,
   },
   statusText: {
     fontSize: 16,

@@ -101,4 +101,28 @@ router.get("/prescriptions", async (req, res) => {
   }
 });
 
+
+// Endpoint to get prescriptions for the selectedUser
+router.get("/prescriptions/:selectedUser", async (req, res) => {
+  try {
+    const selectedUser = req.params.selectedUser;
+
+    // Find all prescriptions for the selected user
+    const prescriptions = await Prescription.find({ selectedUser });
+
+    if (prescriptions.length === 0) {
+      return res.status(404).json({ error: "No prescriptions found for the selected user" });
+    }
+
+    res.status(200).json({
+      message: "Prescriptions retrieved successfully",
+      prescriptions,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while retrieving the prescriptions" });
+  }
+});
+
+
 module.exports = router;
