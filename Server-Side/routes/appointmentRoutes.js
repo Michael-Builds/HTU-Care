@@ -91,7 +91,7 @@ router.get("/appointments", async (req, res) => {
 //Endpoint for posting the rejection of appointment
 router.post("/appointments/reject", async (req, res) => {
   try {
-    const { appointmentId, rejectReason, status } = req.body;
+    const { appointmentId, rejectReason } = req.body;
 
     // Validate input data
     if (!rejectReason) {
@@ -105,8 +105,8 @@ router.post("/appointments/reject", async (req, res) => {
       return res.status(404).json({ error: "Appointment not found" });
     }
 
-    // Update the appointment status to "rejected" or add a `rejected` field
-    appointment.status = status;
+    // Update the appointment status to "rejected"
+    appointment.status = "rejected";
     await appointment.save();
 
     // Create a new rejected appointment instance
@@ -116,8 +116,8 @@ router.post("/appointments/reject", async (req, res) => {
       email: appointment.email,
       date: appointment.date,
       time: appointment.time,
+      status: "rejected",
       condition: appointment.condition,
-      status: appointment.status,
       rejectReason,
       rejectedOn: new Date(),
     });
@@ -151,7 +151,7 @@ router.post("/appointments/reject", async (req, res) => {
 //Endpoint for the Appointment Acceptance
 router.post("/appointments/accept", async (req, res) => {
   try {
-    const { appointmentId, acceptInfo, status } = req.body;
+    const { appointmentId, acceptInfo } = req.body;
 
     //Validate input data for acceptance
     if (!acceptInfo) {
@@ -165,8 +165,8 @@ router.post("/appointments/accept", async (req, res) => {
       return res.status(404).json({ error: "Appointment not found" });
     }
 
-    //Update the appointment status to "rejected" or add an "accepted" field
-    appointment.status = status;
+    //Update the appointment status to "accepted"
+    appointment.status = "accepted";
     await appointment.save();
 
     //Createa new accepted appointments instance
@@ -176,8 +176,8 @@ router.post("/appointments/accept", async (req, res) => {
       email: appointment.email,
       date: appointment.date,
       time: appointment.time,
+      status: "accepted",
       condition: appointment.condition,
-      status: appointment.status,
       acceptInfo,
       acceptedOn: new Date(),
     });
@@ -253,6 +253,9 @@ router.get("/appointments/:id", async (req, res) => {
       return res.status(404).json({ error: "Appointment not found" });
     }
 
+    let status = "pending";
+    let appointmentDetails = appointment;
+
     // Check if the appointment is rejected
     const rejectedAppointment = await RejectedAppointment.findOne({
       appointment: appointment._id,
@@ -260,9 +263,8 @@ router.get("/appointments/:id", async (req, res) => {
 
     if (rejectedAppointment) {
       // Appointment is rejected
-      return res
-        .status(200)
-        .json({ status: "rejected", appointment: rejectedAppointment });
+      status = "rejected";
+      appointmentDetails = rejectedAppointment;
     }
 
     // Check if the appointment is accepted
@@ -272,13 +274,14 @@ router.get("/appointments/:id", async (req, res) => {
 
     if (acceptedAppointment) {
       // Appointment is accepted
-      return res
-        .status(200)
-        .json({ status: "accepted", appointment: acceptedAppointment });
+      status = "accepted";
+      appointmentDetails = acceptedAppointment;
     }
 
-    // Appointment is neither rejected nor accepted
-    res.status(200).json({ status: "pending", appointment });
+    // Set the status field in the appointment details
+    appointmentDetails.status = status;
+
+    res.status(200).json({ status, appointment: appointmentDetails });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch appointment details" });

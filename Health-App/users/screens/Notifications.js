@@ -44,15 +44,17 @@ const Notifications = () => {
           `http://192.168.43.237:4000/appointments/${appointmentId}`
         );
 
-        if (statusResponse.data.status === "rejected") {
+        const { status, appointment } = statusResponse.data;
+
+        if (status === "rejected") {
           setStatus("Appointment rejected");
-          setRejectionReason(statusResponse.data.appointment.rejectReason);
-        } else if (statusResponse.data.status === "accepted") {
+          setRejectionReason(appointment.rejectReason);
+        } else if (status === "accepted") {
           setStatus("Appointment accepted");
-          setAcceptanceInfo(statusResponse.data.appointment.acceptInfo);
+          setAcceptanceInfo(appointment.acceptInfo);
 
           const response = await axios.get(
-            `http://192.168.43.237:4000/prescriptions/${selectedUser}`
+            `http://192.168.43.237:4000/prescriptions/${appointment.selectedUser}`
           );
           const prescriptionData = response.data.prescriptions;
           setPrescriptions(prescriptionData);
