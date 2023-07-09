@@ -1,30 +1,30 @@
 const mongoose = require("mongoose");
 
-const rejectedAppointmentSchema = new mongoose.Schema({
+const rescheduledAppointmentSchema = new mongoose.Schema({
   appointment: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Appointment",
     required: true,
   },
-  rejectReason: {
+  rescheduledReason: {
     type: String,
     required: true,
   },
-  rejectedOn: {
+  rescheduledOn: {
     type: Date,
     required: true,
     default: Date.now,
   },
   status: {
     type: String,
-    enum: ["pending", "accepted", "rejected"],
+    enum: ["pending", "accepted", "rescheduled"],
     default: "pending",
   },
 });
 
-const RejectedAppointment = mongoose.model(
-  "RejectedAppointment",
-  rejectedAppointmentSchema
+const ReScheduledAppointment = mongoose.model(
+  "ReScheduledAppointment",
+  rescheduledAppointmentSchema
 );
 
-module.exports = RejectedAppointment;
+module.exports = ReScheduledAppointment;

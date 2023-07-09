@@ -8,7 +8,7 @@ import { Picker } from "@react-native-picker/picker";
 const Notifications = () => {
   const navigation = useNavigation();
   const [status, setStatus] = useState("");
-  const [rejectionReason, setRejectionReason] = useState("");
+  const [rescheduledReason, setRescheduledReason] = useState("");
   const [acceptanceInfo, setAcceptanceInfo] = useState("");
   const [appointmentDetails, setAppointmentDetails] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
@@ -46,9 +46,9 @@ const Notifications = () => {
 
         const { status, appointment } = statusResponse.data;
 
-        if (status === "rejected") {
-          setStatus("Appointment rejected");
-          setRejectionReason(appointment.rejectReason);
+        if (status === "rescheduled") {
+          setStatus("Appointment rescheduled");
+          setRescheduledReason(appointment.rescheduledReason);
         } else if (status === "accepted") {
           setStatus("Appointment accepted");
           setAcceptanceInfo(appointment.acceptInfo);
@@ -108,9 +108,9 @@ const Notifications = () => {
           ) : (
             <>
               <Text style={styles.statusText}>Status: {status}</Text>
-              {status === "Appointment rejected" && (
-                <Text style={[styles.statusText, styles.rejectionReasonText]}>
-                  Rejection Reason: {rejectionReason}
+              {status === "Appointment rescheduled" && (
+                <Text style={[styles.statusText, styles.rescheduledReasonText]}>
+                  Rescheduling Reason: {rescheduledReason}
                 </Text>
               )}
               {status === "Appointment accepted" && (

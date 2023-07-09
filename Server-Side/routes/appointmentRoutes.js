@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Appointment = require("../models/Appointment");
-const RejectedAppointment = require("../models/RejectedAppointment");
+const ReScheduledAppointment = require("../models/ReScheduledAppointment");
 const AcceptedAppointment = require("../models/AcceptedAppointment");
 const User = require("../models/User");
 const moment = require("moment");
@@ -91,10 +91,10 @@ router.get("/appointments", async (req, res) => {
 //Endpoint for posting the rejection of appointment
 router.post("/appointments/reject", async (req, res) => {
   try {
-    const { appointmentId, rejectReason } = req.body;
+    const { appointmentId, rescheduledReason } = req.body;
 
     // Validate input data
-    if (!rejectReason) {
+    if (!rescheduledReason) {
       return res.status(400).json({ error: "Invalid request data" });
     }
 
@@ -105,36 +105,39 @@ router.post("/appointments/reject", async (req, res) => {
       return res.status(404).json({ error: "Appointment not found" });
     }
 
-    // Update the appointment status to "rejected"
-    appointment.status = "rejected";
+    // Update the appointment status to "rescheduled"
+    appointment.status = "rescheduled";
     await appointment.save();
 
     // Create a new rejected appointment instance
-    const rejectedAppointment = new RejectedAppointment({
+    const rescheduledAppointment = new RejectedAppointment({
       appointment: appointment._id,
       fullname: appointment.fullName,
       email: appointment.email,
       date: appointment.date,
       time: appointment.time,
-      status: "rejected",
+      status: "rescheduled",
       condition: appointment.condition,
-      rejectReason,
-      rejectedOn: new Date(),
+      rescheduledReason,
+      rescheduledOn: new Date(),
     });
 
     // Save the rejected appointment to the database
-    await rejectedAppointment.save();
+    await rescheduledAppointment.save();
 
     // Remove the appointment from the appointment collection
     await Appointment.findByIdAndRemove(appointment._id);
 
     // Log the rejection
-    console.log(`Appointment ${appointment._id} rejected`);
+    console.log(`Appointment ${appointment._id} rescheduled`);
 
-    // Send a response indicating the rejection was successful
-    res.status(200).json({ message: "Appointment rejected successfully" });
+    // Send a response indicating the rescheduled was successful
+    res.status(200).json({ message: "Appointment rescheduled successfully" });
   } catch (error) {
-    console.error("An error occurred while rejecting the appointment:", error);
+    console.error(
+      "An error occurred while rescheduling the appointment:",
+      error
+    );
 
     // Handle specific error cases
     if (error.name === "ValidationError") {
@@ -209,9 +212,9 @@ router.post("/appointments/accept", async (req, res) => {
 });
 
 // Endpoint to count the number of appointments in the rejectedappointment database
-router.get("/rejectedappointments/count", async (req, res) => {
+router.get("/rescheduledappointments/count", async (req, res) => {
   try {
-    const count = await RejectedAppointment.countDocuments();
+    const count = await ReScheduledAppointment.countDocuments();
     res.json({ count });
   } catch (error) {
     res.status(500).json({ error: "Error counting appointments" });
@@ -257,14 +260,14 @@ router.get("/appointments/:id", async (req, res) => {
     let appointmentDetails = appointment;
 
     // Check if the appointment is rejected
-    const rejectedAppointment = await RejectedAppointment.findOne({
+    const rescheduledAppointment = await ReScheduledAppointment.findOne({
       appointment: appointment._id,
     });
 
-    if (rejectedAppointment) {
+    if (rescheduledAppointment) {
       // Appointment is rejected
-      status = "rejected";
-      appointmentDetails = rejectedAppointment;
+      status = "rescheduled";
+      appointmentDetails = rescheduledAppointment;
     }
 
     // Check if the appointment is accepted

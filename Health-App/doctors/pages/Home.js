@@ -161,7 +161,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [acceptedCount, setAcceptedCount] = useState(0);
   const [appointmentCount, setAppointmentCount] = useState(0);
-  const [rejectedCount, setRejectedCount] = useState(0);
+  const [rescheduledCount, setRescheduledCount] = useState(0);
   const [messages, setMessages] = useState([]);
 
   //useEffect for reading and displaying the current number of user's and appointments count in our database
@@ -179,10 +179,10 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    fetch("http://192.168.43.237:4000/rejectedappointments/count")
+    fetch("http://192.168.43.237:4000/rescheduledappointments/count")
       .then((res) => res.json())
       .then((data) => {
-        setRejectedCount(data.count);
+        setRescheduledCount(data.count);
         setLoading(false);
       })
       .catch((error) => {
@@ -224,9 +224,9 @@ const Home = () => {
     },
     {
       name: "Appointments",
-      status: rejectedCount,
+      status: rescheduledCount,
       image: wrong,
-      active: "Rejected",
+      active: "Rescheduled",
       lightColor: "#dad5fe",
       color: "#e7e3ff",
       darkColor: "#D30000",
@@ -237,7 +237,7 @@ const Home = () => {
   const Card = ({ data, index }) => {
     let activeColor;
 
-    if (data.active === "Rejected") {
+    if (data.active === "Rescheduled") {
       activeColor = "#D30000";
     } else if (data.active === "Accepted") {
       activeColor = "#5bb450";

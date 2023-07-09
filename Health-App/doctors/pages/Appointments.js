@@ -24,9 +24,9 @@ const formatTime = (time) => {
 const AppointmentDetailsCard = ({ details }) => {
   const navigation = useNavigation();
   const [showDetails, setShowDetails] = useState(false);
-  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showReschedulModal, setShowReschedulModal] = useState(false);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
-  const [rejectReason, setRejectReason] = useState("");
+  const [rescheduledReason, setRescheduledReason] = useState("");
   const [acceptInfo, setAcceptInfo] = useState("");
 
   const toggleDetails = () => {
@@ -40,7 +40,7 @@ const AppointmentDetailsCard = ({ details }) => {
 
   // Handling of rejection Modal and it's functionalities
   const handleReject = () => {
-    setShowRejectModal(true);
+    setShowReschedulModal(true);
   };
 
   //Handling the submittion of appointment Acceptance
@@ -91,25 +91,25 @@ const AppointmentDetailsCard = ({ details }) => {
   };
 
   //Handling of Appointment Rejection
-  const handleSend = async (appointmentId, rejectReason) => {
+  const handleSend = async (appointmentId, rescheduledReason) => {
     try {
       // Validate input data for rejection
-      if (!rejectReason) {
+      if (!rescheduledReason) {
         Alert.alert("Invalid request data");
       }
 
       // Send the rejection request to the server
-      const rejectionResponse = await axios.post(
-        "http://192.168.43.237:4000/appointments/reject",
+      const rescheduledResponse = await axios.post(
+        "http://192.168.43.237:4000/appointments/rescheduled",
         {
           appointmentId: appointmentId,
-          rejectReason,
+          rescheduledReason,
         }
       );
 
-      // Rejection request successful
-      console.log(rejectionResponse.data.message);
-      Alert.alert("Success", "Appointment Rejected successfully!");
+      // Rescheduled request successful
+      console.log(rescheduledResponse.data.message);
+      Alert.alert("Success", "Appointment Rescheduled successfully!");
 
       // Navigate back to the Home screen
       navigation.navigate("Home");
@@ -122,7 +122,7 @@ const AppointmentDetailsCard = ({ details }) => {
       if (error.response && error.response.data && error.response.data.error) {
         // Rejection request failed with a specific error message
         console.error(
-          "Error while sending rejection:",
+          "Error while sending rescheduling:",
           error.response.data.error
         );
       } else if (error.response && error.response.status === 404) {
@@ -142,7 +142,7 @@ const AppointmentDetailsCard = ({ details }) => {
   };
 
   const closeModal = () => {
-    setShowRejectModal(false);
+    setShowReschedulModal(false);
   };
 
   return (
@@ -177,7 +177,7 @@ const AppointmentDetailsCard = ({ details }) => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={handleReject}>
-              <Text style={styles.buttonText}>Reject</Text>
+              <Text style={styles.buttonText}>Reschedule</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -214,14 +214,16 @@ const AppointmentDetailsCard = ({ details }) => {
       </Modal>
 
       {/* Modal for Rejection and Reason for rejection */}
-      <Modal visible={showRejectModal} animationType="slide" transparent={true}>
+      <Modal visible={showReschedulModal} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Type Reason for Rejection:</Text>
+            <Text style={styles.modalText}>
+              Type Rescheduling for Rejection:
+            </Text>
             <TextInput
               style={styles.input}
-              value={rejectReason}
-              onChangeText={setRejectReason}
+              value={rescheduledReason}
+              onChangeText={setRescheduledReason}
               placeholder="Reason"
               multiline
             />
@@ -232,7 +234,7 @@ const AppointmentDetailsCard = ({ details }) => {
 
               <TouchableOpacity
                 style={styles.modalButton}
-                onPress={() => handleSend(details.id, rejectReason)}
+                onPress={() => handleSend(details.id, rescheduledReason)}
               >
                 <Text style={styles.modalButtonText}>Send</Text>
               </TouchableOpacity>
@@ -262,7 +264,7 @@ const Appointment = () => {
       const response = await axios.get(
         "http://192.168.43.237:4000/appointments"
       );
-   
+
       const updatedDetails = response.data.map((details) => ({
         ...details,
         addedOn: formatDate(details.date),
@@ -443,10 +445,10 @@ const styles = StyleSheet.create({
   },
   noAppointmentsText: {
     fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
+    fontWeight: "500",
+    textAlign: "center",
     marginTop: 25,
-    color: 'gray',
+    color: "gray",
   },
 });
 
