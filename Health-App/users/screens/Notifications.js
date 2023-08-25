@@ -43,7 +43,6 @@ const Notifications = () => {
         const statusResponse = await axios.get(
           `http://192.168.43.237:4000/appointments/${appointmentId}`
         );
-
         const { status, appointment } = statusResponse.data;
 
         if (status === "rescheduled") {
