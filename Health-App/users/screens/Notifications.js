@@ -14,6 +14,7 @@ const Notifications = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [selectedContent, setSelectedContent] = useState(null);
   const [notificationType, setNotificationType] = useState("");
+  const [appointmentNotBooked, setAppointmentNotBooked] = useState(false);
 
   const notificationTypeOptions = [
     { label: "Appointments", value: "appointments" },
@@ -36,6 +37,10 @@ const Notifications = () => {
       );
       const appointmentDetails = response.data;
       setAppointmentDetails(appointmentDetails);
+
+      if (appointmentDetails.length === 0) {
+        setAppointmentNotBooked(true);
+      }
 
       if (appointmentDetails.length > 0) {
         const appointmentId = appointmentDetails[0]._id;
@@ -102,20 +107,38 @@ const Notifications = () => {
       {selectedContent === "appointments" && (
         <View style={styles.contentContainer}>
           <Text style={styles.title}>Appointments</Text>
-          {appointmentDetails.length === 0 ? (
-            <Text style={styles.statusText}>Pending Approval...</Text>
+          {appointmentNotBooked ? (
+            <Text style={styles.statusText}>
+              Appointment hasn't been booked
+            </Text>
           ) : (
             <>
-              <Text style={styles.statusText}>Status: {status}</Text>
-              {status === "Appointment rescheduled" && (
-                <Text style={[styles.statusText, styles.rescheduledReasonText]}>
-                  Rescheduling Reason: {rescheduledReason}
-                </Text>
-              )}
-              {status === "Appointment accepted" && (
-                <Text style={[styles.statusText, styles.acceptanceInfoText]}>
-                  Acceptance Information: {acceptanceInfo}
-                </Text>
+              {appointmentDetails.length === 0 ? (
+                <Text style={styles.statusText}>Pending Approval...</Text>
+              ) : (
+                <>
+                  <Text style={styles.statusText}>Status: {status}</Text>
+                  {status === "Appointment rescheduled" && (
+                    <Text
+                      style={[
+                        styles.statusText,
+                        styles.rescheduledReasonText,
+                      ]}
+                    >
+                      Rescheduling Reason: {rescheduledReason}
+                    </Text>
+                  )}
+                  {status === "Appointment accepted" && (
+                    <Text
+                      style={[
+                        styles.statusText,
+                        styles.acceptanceInfoText,
+                      ]}
+                    >
+                      Acceptance Information: {acceptanceInfo}
+                    </Text>
+                  )}
+                </>
               )}
             </>
           )}
