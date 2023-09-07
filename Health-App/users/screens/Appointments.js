@@ -10,10 +10,13 @@ import {
 } from "react-native";
 import CustomDrawer from "../navigators/CustomDrawer";
 import { useNavigation } from "@react-navigation/native";
+import doctors from '../data/doctors.json';
+import { LuHeartPulse } from 'react-icons/lu';
+import { PiBrain } from 'react-icons/pi';
+import { FaVenus } from 'react-icons/fa';
 
 const Appointment = () => {
   const navigation = useNavigation();
-
   const imageAnim = useRef(new Animated.Value(0)).current;
   const nameAnim = useRef(new Animated.Value(0)).current;
   const specialtyAnim = useRef(new Animated.Value(0)).current;

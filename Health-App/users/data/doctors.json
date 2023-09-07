@@ -1,0 +1,35 @@
+[
+    {
+      "id": "1",
+      "name": "Dr. Moris Patray",
+      "image": "https://images.unsplash.com/photo-1651008376811-b90baee60c1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8RG9jdG9yfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+      "specialty": "Neurologist (10 years of experience)",
+      "rate": "$200",
+      "description": "Dr. Moris Patray is an experienced neurologist with 10 years of practice. He specializes in diagnosing and treating neurological conditions."
+    },
+    {
+      "id": "2",
+      "name": "Dr. Michael Kabanda",
+      "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8RG9jdG9yfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+      "specialty": "Cardiologist (12 years of experience)",
+      "rate": "$150",
+      "description": "Dr. Michael Kabanda is a highly experienced cardiologist with 12 years of practice. He specializes in the diagnosis and treatment of heart-related conditions."
+    },
+    {
+      "id": "3",
+      "name": "Dr. Emelia Ahiagbenyo",
+      "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fERvY3RvcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+      "specialty": "Gynecologist (10 years of experience)",
+      "rate": "$250",
+      "description": "Dr. Emelia Ahiagbenyo is a skilled gynecologist with 10 years of practice. She specializes in women's reproductive health and gynecological care."
+    },
+    {
+      "id": "4",
+      "name": "Dr. Blessing Kabanda",
+      "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fERvY3RvcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+      "specialty": "Urologist (5 years of experience)",
+      "rate": "$200",
+      "description": "Dr. Blessing Kabanda is a dedicated urologist with 5 years of practice. He specializes in the diagnosis and treatment of urological conditions."
+    }
+  ]
+  
