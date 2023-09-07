@@ -157,7 +157,7 @@ const SignUp = () => {
                 placeholderTextColor="#6b7280"
                 style={styles.inputControl}
                 value={username}
-                // theme = {{colors: {primary: '#191970'}}}
+              // theme = {{colors: {primary: '#191970'}}}
               />
             </View>
 
@@ -173,7 +173,7 @@ const SignUp = () => {
                 placeholderTextColor="#6b7280"
                 style={styles.inputControl}
                 value={email}
-                // theme = {{colors: {primary: '#191970'}}}
+              // theme = {{colors: {primary: '#191970'}}}
               />
             </View>
 
@@ -191,7 +191,7 @@ const SignUp = () => {
                   placeholder="Enter Password"
                   placeholderTextColor="#6b7280"
                   secureTextEntry={!showPassword}
-                  // theme = {{colors: {primary: '#191970'}}}
+
                 />
 
                 <View style={{ position: "absolute", right: 8 }}>
