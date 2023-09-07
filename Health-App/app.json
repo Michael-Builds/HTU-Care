@@ -3,6 +3,14 @@
     "name": "Health-App",
     "slug": "Health-App",
     "version": "1.0.0",
-    "orientation": "portrait"
+    "orientation": "portrait",
+    "extra": {
+      "eas": {
+        "projectId": "547890fb-c03a-48ec-af8e-0e183e4f236e"
+      }
+    },
+    "android": {
+      "package": "com.kpanti.HealthApp"
+    }
   }
 }
